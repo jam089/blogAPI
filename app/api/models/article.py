@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import Unicode, UnicodeText
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from .base import Base
 
@@ -18,3 +19,11 @@ class Article(Base):
     author_name: Mapped[str] = mapped_column(Unicode(50))
 
     comments: Mapped[list["Comment"]] = relationship(back_populates="article")
+
+    @hybrid_property
+    def score(self):
+        if len(self.comments):
+            return 0
+        score_sum = sum(comment.score for comment in self.comments)
+        comments_qty = len(self.comments) + 1
+        return round(score_sum / comments_qty, 2)
