@@ -27,4 +27,4 @@ class ReadArticleSchm(CreateArticleSchm):
     id: int
     created_at: datetime
     last_updated_at: datetime | None = None
-    result_score: float | 0 = 0
+    score: float
