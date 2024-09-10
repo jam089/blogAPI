@@ -12,4 +12,4 @@ class Base(DeclarativeBase):
         default=datetime.now(),
         server_default=func.now(),
     )
-    last_updated_at: Mapped[datetime]
+    last_updated_at: Mapped[datetime | None]
