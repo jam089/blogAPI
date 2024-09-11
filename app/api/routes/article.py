@@ -4,7 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import crud
-from api.schemes import ReadArticleSchm, ReadArticleWithCommentsSchm
+from api.schemes import (
+    ReadArticleSchm,
+    ReadArticleWithCommentsSchm,
+    CreateArticleSchm,
+)
 from core import db_helper
 
 router = APIRouter()
@@ -29,3 +33,15 @@ async def get_all_articles(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
     return await crud.get_all_articles(sess)
+
+
+@router.post(
+    "/",
+    response_model=ReadArticleSchm,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_article(
+    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    article_in: CreateArticleSchm,
+):
+    return await crud.create_article(sess, article_in=article_in)
