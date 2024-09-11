@@ -16,6 +16,22 @@ class DBSettings(BaseModel):
     max_overflow: int = 10
 
 
+class ArticlesRouterSettings(BaseModel):
+    prefix: str = "/article"
+    tag: str = "Articles"
+
+
+class CommentsRouterSettings(BaseModel):
+    prefix: str = "/comment"
+    tag: str = "Comments"
+
+
+class APIRouterSettings(BaseModel):
+    prefix: str = "/api"
+    articles: ArticlesRouterSettings = ArticlesRouterSettings()
+    comments: CommentsRouterSettings = CommentsRouterSettings()
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=[".env.template", ".env"],
@@ -25,6 +41,7 @@ class Settings(BaseSettings):
     )
 
     run: RunSettings = RunSettings()
+    api: APIRouterSettings = APIRouterSettings()
     db: DBSettings
 
 
