@@ -5,6 +5,7 @@ from sqlalchemy import select, ScalarResult
 from sqlalchemy.orm import selectinload
 
 from core.models import Article
+from api.schemes import CreateArticleSchm
 
 
 async def get_all_articles(sess: AsyncSession) -> Sequence[Article]:
@@ -24,3 +25,14 @@ async def get_article_with_five_last_comments(
     )
     article: Article = await sess.scalar(stmt)
     return article
+
+
+async def create_article(
+    sess: AsyncSession,
+    article_in: CreateArticleSchm,
+) -> Article:
+    new_article = Article(**article_in.model_dump())
+    sess.add(new_article)
+    await sess.commit()
+    await sess.refresh(new_article)
+    return new_article
