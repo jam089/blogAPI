@@ -1,0 +1,14 @@
+from fastapi import APIRouter
+
+from .routes.article import router as articles_router
+
+from core import settings
+
+
+router = APIRouter(prefix=settings.api.prefix)
+
+router.include_router(
+    router=articles_router,
+    prefix=settings.api.articles.prefix,
+    tags=[settings.api.articles.tag],
+)
