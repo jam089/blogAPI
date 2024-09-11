@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, ScalarResult
 from sqlalchemy.orm import selectinload
 
-from api.models import Article
+from core.models import Article
 
 
 async def get_all_articles(sess: AsyncSession) -> Sequence[Article]:
