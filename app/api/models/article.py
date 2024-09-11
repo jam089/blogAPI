@@ -21,6 +21,7 @@ class Article(Base):
     comments: Mapped[list["Comment"]] = relationship(
         back_populates="article",
         lazy="immediate",
+        order_by="Comment.created_at.desc()",
     )
 
     @hybrid_property
