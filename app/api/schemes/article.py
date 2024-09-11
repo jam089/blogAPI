@@ -1,6 +1,9 @@
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from .comment import ReadCommentSchm
 
 from core import settings
 
@@ -49,3 +52,7 @@ class ReadArticleSchm(CreateArticleSchm):
     created_at: datetime
     last_updated_at: datetime | None = None
     score: float
+
+
+class ReadArticleWithCommentsSchm(ReadArticleSchm):
+    comments: List[ReadCommentSchm] | None = None
