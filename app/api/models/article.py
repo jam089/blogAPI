@@ -18,12 +18,20 @@ class Article(Base):
     topic: Mapped[str] = mapped_column(Unicode(36))
     author_name: Mapped[str] = mapped_column(Unicode(50))
 
-    comments: Mapped[list["Comment"]] = relationship(back_populates="article")
+    comments: Mapped[list["Comment"]] = relationship(
+        back_populates="article",
+        lazy="immediate",
+    )
 
     @hybrid_property
-    def score(self):
-        if len(self.comments):
+    def score(self) -> float | int:
+
+        if not self.comments:
             return 0
-        score_sum = sum(comment.score for comment in self.comments)
-        comments_qty = len(self.comments) + 1
+
+        score_sum = 0
+        comments_qty = 0
+        for comment in self.comments:
+            score_sum += comment.score
+            comments_qty += 1
         return round(score_sum / comments_qty, 2)
