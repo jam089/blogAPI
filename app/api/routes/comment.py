@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import crud
-from api.schemes import ReadCommentSchm
+from api.schemes import ReadCommentSchm, CreateCommentSchm
 from core import db_helper
 
 router = APIRouter()
@@ -40,3 +40,18 @@ async def get_comment(
         return comment
 
     raise HTTP_404_comment
+
+
+@router.post(
+    "/",
+    response_model=ReadCommentSchm,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_comment(
+    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    comment_in: CreateCommentSchm,
+):
+    if await crud.get_article(sess, comment_in.article_id):
+        return await crud.create_comment(sess, comment_in)
+
+    raise HTTP_404_article
