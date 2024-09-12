@@ -19,7 +19,7 @@ async def get_article(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     article_id: int,
 ):
-    if result := await crud.get_article_with_five_last_comments(sess, article_id):
+    if result := await crud.get_article(sess, article_id):
         return result
 
     raise HTTPException(

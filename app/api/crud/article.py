@@ -14,7 +14,7 @@ async def get_all_articles(sess: AsyncSession) -> Sequence[Article]:
     return result.all()
 
 
-async def get_article_with_five_last_comments(
+async def get_article(
     sess: AsyncSession,
     article_id: int,
 ) -> Article:
