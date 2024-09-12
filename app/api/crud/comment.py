@@ -49,3 +49,11 @@ async def update_comment(
     await sess.commit()
     await sess.refresh(comment_to_update)
     return comment_to_update
+
+
+async def delete_comment(
+    sess: AsyncSession,
+    comment_to_delete: Comment,
+) -> None:
+    await sess.delete(comment_to_delete)
+    await sess.commit()
