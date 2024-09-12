@@ -5,7 +5,7 @@ from sqlalchemy import select, ScalarResult
 from sqlalchemy.orm import selectinload
 
 from core.models import Article
-from api.schemes import CreateArticleSchm
+from api.schemes import CreateArticleSchm, ChangeArticleSchm
 
 
 async def get_all_articles(sess: AsyncSession) -> Sequence[Article]:
@@ -36,3 +36,16 @@ async def create_article(
     await sess.commit()
     await sess.refresh(new_article)
     return new_article
+
+
+async def update_article(
+    sess: AsyncSession,
+    article_to_update: Article,
+    article_in: ChangeArticleSchm,
+) -> Article:
+    for name, value in article_in.model_dump(exclude_unset=True).items():
+        setattr(article_to_update, name, value)
+
+    await sess.commit()
+    await sess.refresh(article_to_update)
+    return article_to_update
