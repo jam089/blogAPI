@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, ScalarResult
 
 from core.models import Comment, Article
-from api.schemes import CreateCommentSchm
+from api.schemes import CreateCommentSchm, ChangeCommentSchm
 
 
 async def get_comment(
@@ -36,3 +36,16 @@ async def create_comment(
     await sess.commit()
     await sess.refresh(new_comment)
     return new_comment
+
+
+async def update_comment(
+    sess: AsyncSession,
+    comment_to_update: Comment,
+    comment_in: ChangeCommentSchm,
+) -> Comment:
+    for name, value in comment_in.model_dump(exclude_unset=True).items():
+        setattr(comment_to_update, name, value)
+
+    await sess.commit()
+    await sess.refresh(comment_to_update)
+    return comment_to_update

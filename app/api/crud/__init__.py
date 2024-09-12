@@ -7,6 +7,7 @@ __all__ = (
     "get_comment",
     "get_comments_of_article",
     "create_comment",
+    "update_comment",
 )
 
 from .article import (
@@ -20,4 +21,5 @@ from .comment import (
     get_comment,
     get_comments_of_article,
     create_comment,
+    update_comment,
 )
