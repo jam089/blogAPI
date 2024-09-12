@@ -13,6 +13,11 @@ from core import db_helper
 
 router = APIRouter()
 
+HTTP_404 = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="article not found",
+)
+
 
 @router.get("/{article_id}/", response_model=ReadArticleWithCommentsSchm)
 async def get_article(
@@ -22,10 +27,7 @@ async def get_article(
     if result := await crud.get_article(sess, article_id):
         return result
 
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="article not found",
-    )
+    raise HTTP_404
 
 
 @router.get("/", response_model=Sequence[ReadArticleSchm])
