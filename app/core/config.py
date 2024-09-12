@@ -41,6 +41,12 @@ class ArticlesParam(BaseModel):
     author_name_max_length: int = 50
 
 
+class CommentsParam(BaseModel):
+    comment_text_min_length: int = 2
+    comment_text_max_length: int = 260
+    author_name_max_length: int = 50
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=[".env.template", ".env"],
@@ -52,6 +58,7 @@ class Settings(BaseSettings):
     run: RunSettings = RunSettings()
     api: APIRouterSettings = APIRouterSettings()
     article_param: ArticlesParam = ArticlesParam()
+    comment_param: CommentsParam = CommentsParam()
     db: DBSettings
 
 
