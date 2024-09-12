@@ -67,3 +67,14 @@ async def update_comment(
         return await crud.update_comment(sess, comment_to_update, comment_in)
 
     raise HTTP_404_comment
+
+
+@router.delete("/{comment_id}/", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_comment(
+    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    comment_id: int,
+):
+    if not (comment_to_delete := await crud.get_comment(sess, comment_id)):
+        raise HTTP_404_comment
+
+    await crud.delete_comment(sess, comment_to_delete)
