@@ -60,3 +60,14 @@ async def update_article(
         raise HTTP_404
 
     return await crud.update_article(sess, article_to_update, article_in)
+
+
+@router.delete("/{article_id}/", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_article(
+    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    article_id: int,
+):
+    if not (article_to_delete := await crud.get_article(sess, article_id)):
+        raise HTTP_404
+
+    await crud.delete_article(sess, article_to_delete)
