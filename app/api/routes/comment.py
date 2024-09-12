@@ -20,7 +20,7 @@ HTTP_404_article = HTTPException(
 )
 
 
-@router.get("/", response_model=Sequence[ReadCommentSchm])
+@router.get("/article/{article_id}/", response_model=Sequence[ReadCommentSchm])
 async def get_comments_of_article(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     article_id: int,
