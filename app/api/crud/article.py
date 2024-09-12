@@ -49,3 +49,11 @@ async def update_article(
     await sess.commit()
     await sess.refresh(article_to_update)
     return article_to_update
+
+
+async def delete_article(
+    sess: AsyncSession,
+    article_to_del: Article,
+) -> None:
+    await sess.delete(article_to_del)
+    await sess.commit()

@@ -3,6 +3,7 @@ __all__ = (
     "get_article",
     "create_article",
     "update_article",
+    "delete_article",
 )
 
 from .article import (
@@ -10,4 +11,5 @@ from .article import (
     get_article,
     create_article,
     update_article,
+    delete_article,
 )
