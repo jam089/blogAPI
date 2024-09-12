@@ -4,6 +4,7 @@ __all__ = (
     "create_article",
     "update_article",
     "delete_article",
+    "get_comment",
 )
 
 from .article import (
@@ -13,3 +14,4 @@ from .article import (
     update_article,
     delete_article,
 )
+from .comment import get_comment
