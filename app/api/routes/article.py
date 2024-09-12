@@ -8,6 +8,7 @@ from api.schemes import (
     ReadArticleSchm,
     ReadArticleWithCommentsSchm,
     CreateArticleSchm,
+    ChangeArticleSchm,
 )
 from core import db_helper
 
@@ -47,3 +48,15 @@ async def create_article(
     article_in: CreateArticleSchm,
 ):
     return await crud.create_article(sess, article_in=article_in)
+
+
+@router.patch("/{article_id}/", response_model=ReadArticleSchm)
+async def update_article(
+    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    article_id: int,
+    article_in: ChangeArticleSchm,
+):
+    if not (article_to_update := await crud.get_article(sess, article_id)):
+        raise HTTP_404
+
+    return await crud.update_article(sess, article_to_update, article_in)
