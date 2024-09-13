@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, ScalarResult
+from sqlalchemy import select, ScalarResult, insert
 from sqlalchemy.orm import selectinload
 
 from core.models import Article
@@ -57,3 +57,17 @@ async def delete_article(
 ) -> None:
     await sess.delete(article_to_del)
     await sess.commit()
+
+
+async def bulk_load_article(
+    sess: AsyncSession,
+    json_file: list[dict[Article]],
+) -> bool:
+    try:
+        stmt = insert(Article).values(json_file)
+        await sess.execute(stmt)
+        await sess.commit()
+        return True
+    except Exception:
+        await sess.rollback()
+        return False
