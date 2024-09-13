@@ -1,5 +1,10 @@
+from pathlib import Path
+
 from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+BASE_DIR = Path(__file__).parent.parent
 
 
 class RunSettings(BaseModel):
@@ -16,6 +21,11 @@ class DBSettings(BaseModel):
     max_overflow: int = 10
 
 
+class DataImportSettings(BaseModel):
+    article_import_json: Path = BASE_DIR / "import_data" / "articles.json"
+    comment_import_json: Path = BASE_DIR / "import_data" / "comments.json"
+
+
 class ArticlesRouterSettings(BaseModel):
     prefix: str = "/article"
     tag: str = "Articles"
@@ -26,10 +36,17 @@ class CommentsRouterSettings(BaseModel):
     tag: str = "Comments"
 
 
+class AdministrationRouterSettings(BaseModel):
+    prefix: str = "/admin"
+    tag: str = "Administration"
+    data_import: DataImportSettings = DataImportSettings()
+
+
 class APIRouterSettings(BaseModel):
     prefix: str = "/api"
     articles: ArticlesRouterSettings = ArticlesRouterSettings()
     comments: CommentsRouterSettings = CommentsRouterSettings()
+    admin: AdministrationRouterSettings = AdministrationRouterSettings()
 
 
 class ArticlesParam(BaseModel):
