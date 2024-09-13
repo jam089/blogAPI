@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, ScalarResult, insert
+from sqlalchemy import select, ScalarResult, insert, update, or_
 from sqlalchemy.orm import selectinload
 
 from core.models import Article
@@ -71,3 +71,19 @@ async def bulk_load_article(
     except Exception:
         await sess.rollback()
         return False
+
+
+async def inactive_imported_articles(sess: AsyncSession):
+    update_value = {"import_article_id": -9999}
+    stmt = (
+        update(Article)
+        .values(update_value)
+        .where(
+            or_(
+                Article.import_article_id != None,
+                Article.import_article_id != -9999,
+            )
+        )
+    )
+    await sess.execute(stmt)
+    await sess.commit()
