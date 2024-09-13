@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Unicode, UnicodeText
+from sqlalchemy import Unicode, UnicodeText, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -17,6 +17,7 @@ class Article(Base):
     text: Mapped[str] = mapped_column(UnicodeText)
     topic: Mapped[str] = mapped_column(Unicode(36))
     author_name: Mapped[str] = mapped_column(Unicode(50))
+    import_article_id: Mapped[int | None] = mapped_column(Integer)
 
     comments: Mapped[list["Comment"]] = relationship(
         back_populates="article",
