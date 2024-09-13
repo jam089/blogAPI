@@ -57,3 +57,27 @@ async def delete_comment(
 ) -> None:
     await sess.delete(comment_to_delete)
     await sess.commit()
+
+
+async def bulk_load_comments(
+    sess: AsyncSession,
+    json_file: list[dict],
+) -> bool:
+    try:
+        for in_file_comment in json_file:
+            import_id = in_file_comment.get("import_article_id")
+            stmt = select(Article).where(Article.import_article_id == import_id)
+            article = await sess.scalar(stmt)
+            in_file_comment.pop("import_article_id")
+            new_comment_dict = {
+                "article_id": article.id,
+                **in_file_comment,
+            }
+            new_comment = Comment(**new_comment_dict)
+            sess.add(new_comment)
+            await sess.commit()
+
+        return True
+    except Exception:
+        await sess.rollback()
+        return False
