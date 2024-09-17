@@ -27,6 +27,14 @@ async def get_article(
     return article
 
 
+async def get_trend_articles(
+    sess: AsyncSession,
+) -> Sequence[Article]:
+    stmt = select(Article).order_by(Article.absolut_score.desc()).limit(20)
+    result: ScalarResult = await sess.scalars(stmt)
+    return result.all()
+
+
 async def create_article(
     sess: AsyncSession,
     article_in: CreateArticleSchm,
