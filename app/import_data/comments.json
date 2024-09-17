@@ -1,0 +1,32 @@
+[
+  {
+    "comment_text": "CTest1",
+    "author_name": "Com Test One",
+    "score": 2,
+    "import_article_id": 1
+  },
+  {
+    "comment_text": "CTest2",
+    "author_name": "Com Test Two",
+    "score": 3,
+    "import_article_id": 2
+  },
+  {
+    "comment_text": "CTest3",
+    "author_name": "Com Test Three",
+    "score": 5,
+    "import_article_id": 2
+  },
+  {
+    "comment_text": "CTest4",
+    "author_name": "Com Test Four",
+    "score": 7,
+    "import_article_id": 2
+  },
+  {
+    "comment_text": "CTest5",
+    "author_name": "Com Test Five",
+    "score": 8,
+    "import_article_id": 2
+  }
+]

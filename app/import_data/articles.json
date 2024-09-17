@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Test1",
+    "text": "Test_one",
+    "topic": "Test",
+    "author_name": "Test One",
+    "import_article_id": 1
+  },
+  {
+    "title": "Test2",
+    "text": "Test_two",
+    "topic": "Test",
+    "author_name": "Test Two",
+    "import_article_id": 2
+  },
+  {
+    "title": "Test3",
+    "text": "Test_three",
+    "topic": "Test",
+    "author_name": "Test Three",
+    "import_article_id": 3
+  }
+]
