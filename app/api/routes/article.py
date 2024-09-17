@@ -20,6 +20,13 @@ HTTP_404 = HTTPException(
 )
 
 
+@router.get("/trends/", response_model=Sequence[ReadArticleSchm])
+async def get_trends_articles(
+    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+):
+    return await crud.get_trend_articles(sess)
+
+
 @router.get("/{article_id}/", response_model=ReadArticleWithCommentsSchm)
 async def get_article(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
