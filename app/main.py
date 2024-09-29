@@ -14,4 +14,6 @@ if __name__ == "__main__":
         host=settings.run.host,
         port=settings.run.port,
         reload=settings.run.reload,
+        # workers=4,
+        # loop="none",  # for Redis testing
     )
