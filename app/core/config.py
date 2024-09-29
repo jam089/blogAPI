@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +19,18 @@ class DBSettings(BaseModel):
     echo_pool: bool = False
     pool_size: int = 50
     max_overflow: int = 10
+
+
+class ResponseCache(BaseModel):
+    expire: int | None = 7
+    inactive: bool = False
+
+
+class CacheSettings(BaseModel):
+    url: RedisDsn
+    encoding: str = "utf-8"
+    decode_responses: bool = True
+    resp: ResponseCache = ResponseCache()
 
 
 class DataImportSettings(BaseModel):
@@ -77,6 +89,7 @@ class Settings(BaseSettings):
     article_param: ArticlesParam = ArticlesParam()
     comment_param: CommentsParam = CommentsParam()
     db: DBSettings
+    cache: CacheSettings
 
 
 settings = Settings()
