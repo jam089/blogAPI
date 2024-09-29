@@ -11,6 +11,7 @@ from api.schemes import (
     ChangeArticleSchm,
 )
 from core import db_helper
+from core.utils.redis_utils import redis_cache
 
 router = APIRouter()
 
@@ -21,6 +22,7 @@ HTTP_404 = HTTPException(
 
 
 @router.get("/trends/", response_model=Sequence[ReadArticleSchm])
+@redis_cache(model_type=Sequence[ReadArticleSchm])
 async def get_trends_articles(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
@@ -39,6 +41,7 @@ async def get_article(
 
 
 @router.get("/", response_model=Sequence[ReadArticleSchm])
+@redis_cache(model_type=Sequence[ReadArticleSchm])
 async def get_all_articles(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
