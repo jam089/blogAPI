@@ -3,6 +3,7 @@ from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, ScalarResult
 
+from core import settings
 from core.models import Comment, Article
 from api.schemes import CreateCommentSchm, ChangeCommentSchm
 
@@ -69,9 +70,14 @@ async def bulk_load_comments(
             stmt = select(Article).where(Article.import_article_id == import_id)
             article = await sess.scalar(stmt)
             in_file_comment.pop("import_article_id")
+            in_file_comment_without_text = in_file_comment.copy()
+            in_file_comment_without_text.pop("comment_text")
             new_comment_dict = {
                 "article_id": article.id,
-                **in_file_comment,
+                "comment_text": in_file_comment.get("comment_text")[
+                    : settings.comment_param.comment_text_max_length
+                ],
+                **in_file_comment_without_text,
             }
             new_comment = Comment(**new_comment_dict)
             sess.add(new_comment)
