@@ -21,6 +21,29 @@ services:
               "--requirepass", "radmin",
               "--appendonly", "yes"]
 
+  elasticsearch:
+    image: elasticsearch:8.15.2
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=guest
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - esdata:/var/lib/elasticsearch/data
+    networks:
+      - esnet
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
   adminer:
     image: adminer
     ports:
@@ -31,3 +54,8 @@ volumes:
     driver: local
   redis_data:
     driver: local
+  esdata:
+    driver: local
+
+networks:
+  esnet:
