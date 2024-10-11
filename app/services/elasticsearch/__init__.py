@@ -4,6 +4,7 @@ __all__ = {
     "check_index",
     "indexing_docs",
     "add_doc",
+    "update_doc",
 }
 
 from services.elasticsearch.es_helper import es
@@ -12,4 +13,5 @@ from services.elasticsearch.elasticsearch_utils import (
     check_index,
     indexing_docs,
     add_doc,
+    update_doc,
 )

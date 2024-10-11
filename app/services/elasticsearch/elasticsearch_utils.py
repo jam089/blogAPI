@@ -86,3 +86,18 @@ async def add_doc(
         document=data_for_es.model_dump(),
     )
     return response
+
+
+async def update_doc(
+    es_session: AsyncElasticsearch,
+    index_name: str,
+    doc_id: int,
+    pydantic_object: BaseModel,
+) -> dict:
+    update_body = {"doc": pydantic_object.model_dump(exclude_unset=True)}
+    response = await es_session.update(
+        index=index_name,
+        id=str(doc_id),
+        body=update_body,
+    )
+    return response
