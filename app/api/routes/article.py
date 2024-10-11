@@ -1,5 +1,6 @@
 from typing import Annotated, Sequence
 
+from elasticsearch import AsyncElasticsearch
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,8 +11,10 @@ from api.schemes import (
     CreateArticleSchm,
     ChangeArticleSchm,
 )
-from core import db_helper
+from core import db_helper, settings
+from core.models import Article
 from services.redis import redis_cache
+from services.elasticsearch import es, add_doc
 
 router = APIRouter()
 
@@ -54,10 +57,18 @@ async def get_all_articles(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_article(
-    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
     article_in: CreateArticleSchm,
 ):
-    return await crud.create_article(sess, article_in=article_in)
+    article: Article = await crud.create_article(db_sess, article_in=article_in)
+    await add_doc(
+        es_session=es_sess,
+        index_name=settings.es.articles_index,
+        sql_object=article,
+        pydantic_schm=CreateArticleSchm,
+    )
+    return article
 
 
 @router.patch("/{article_id}/", response_model=ReadArticleSchm)
