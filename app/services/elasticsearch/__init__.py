@@ -5,6 +5,7 @@ __all__ = {
     "indexing_docs",
     "add_doc",
     "update_doc",
+    "remove_doc",
 }
 
 from services.elasticsearch.es_helper import es
@@ -14,4 +15,5 @@ from services.elasticsearch.elasticsearch_utils import (
     indexing_docs,
     add_doc,
     update_doc,
+    remove_doc,
 )

@@ -101,3 +101,15 @@ async def update_doc(
         body=update_body,
     )
     return response
+
+
+async def remove_doc(
+    es_session: AsyncElasticsearch,
+    index_name: str,
+    doc_id: int,
+) -> dict:
+    response = await es_session.delete(
+        index=index_name,
+        id=str(doc_id),
+    )
+    return response
