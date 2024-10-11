@@ -71,3 +71,18 @@ async def indexing_docs(
         "failed": failed,
     }
     return response
+
+
+async def add_doc(
+    es_session: AsyncElasticsearch,
+    index_name: str,
+    sql_object: Base,
+    pydantic_schm: Type[BaseModel],
+) -> dict:
+    data_for_es = pydantic_schm.model_validate(sql_object)
+    response = await es_session.index(
+        index=index_name,
+        id=str(sql_object.id),
+        document=data_for_es.model_dump(),
+    )
+    return response
