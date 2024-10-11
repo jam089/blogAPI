@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseModel, PostgresDsn, RedisDsn
+from pydantic import BaseModel, PostgresDsn, RedisDsn, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,6 +31,11 @@ class CacheSettings(BaseModel):
     encoding: str = "utf-8"
     decode_responses: bool = True
     resp: ResponseCache = ResponseCache()
+
+
+class ElasticSearchSettings(BaseModel):
+    url: AnyUrl
+    articles_index: str = "articles"
 
 
 class DataImportSettings(BaseModel):
@@ -90,6 +95,7 @@ class Settings(BaseSettings):
     comment_param: CommentsParam = CommentsParam()
     db: DBSettings
     cache: CacheSettings
+    es: ElasticSearchSettings
 
 
 settings = Settings()
