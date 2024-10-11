@@ -15,7 +15,7 @@ class CreateCommentSchm(BaseCommentSchm):
         max_length=settings.comment_param.comment_text_max_length,
     )
     author_name: str = Field(max_length=settings.comment_param.author_name_max_length)
-    score: int = Field(ge=1, le=10)
+    score: int = Field(10, ge=1, le=10)
     article_id: int
 
 
