@@ -14,7 +14,7 @@ from api.schemes import (
 from core import db_helper, settings
 from core.models import Article
 from services.redis import redis_cache
-from services.elasticsearch import es, add_doc, update_doc
+from services.elasticsearch import es, add_doc, update_doc, remove_doc
 
 router = APIRouter()
 
@@ -95,10 +95,17 @@ async def update_article(
 
 @router.delete("/{article_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_article(
-    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
     article_id: int,
 ):
-    if not (article_to_delete := await crud.get_article(sess, article_id)):
+    if not (article_to_delete := await crud.get_article(db_sess, article_id)):
         raise HTTP_404
 
-    await crud.delete_article(sess, article_to_delete)
+    await crud.delete_article(db_sess, article_to_delete)
+
+    await remove_doc(
+        es_session=es_sess,
+        index_name=settings.es.articles_index,
+        doc_id=article_id,
+    )
