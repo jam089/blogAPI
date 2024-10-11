@@ -50,7 +50,7 @@ async def gen_data_to_bulk(
         }
 
 
-async def index_docs(
+async def indexing_docs(
     db_session,
     es_session: AsyncElasticsearch,
     index_name: str,

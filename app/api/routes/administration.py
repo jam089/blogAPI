@@ -10,7 +10,7 @@ from core import db_helper, settings
 from core.utils.file_utils import json_read
 from core.models import Article
 from api.schemes import CreateArticleSchm
-from services.elasticsearch import index_docs, es
+from services.elasticsearch import indexing_docs, es
 
 router = APIRouter()
 
@@ -41,7 +41,7 @@ async def index_articles(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
 ) -> dict[str, int | List[int]]:
-    return await index_docs(
+    return await indexing_docs(
         db_session=db_sess,
         es_session=es_sess,
         index_name=settings.es.articles_index,
