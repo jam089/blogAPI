@@ -13,6 +13,8 @@ class BaseArticleSchm(BaseModel):
 
 
 class CreateArticleSchm(BaseArticleSchm):
+    model_config = ConfigDict(from_attributes=True)
+
     title: str = Field(
         min_length=settings.article_param.title_min_length,
         max_length=settings.article_param.title_max_length,
@@ -46,8 +48,6 @@ class ChangeArticleSchm(BaseArticleSchm):
 
 
 class ReadArticleSchm(CreateArticleSchm):
-    model_config = ConfigDict(from_attributes=True)
-
     id: int
     created_at: datetime
     last_updated_at: datetime | None = None
