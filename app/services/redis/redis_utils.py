@@ -4,7 +4,7 @@ from typing import Awaitable, Callable, Any, Type, Sequence, get_args
 from pydantic import TypeAdapter
 
 from core import settings
-from services.redis_helper import r_cache
+from services.redis.redis_helper import r_cache
 
 
 def redis_cache(

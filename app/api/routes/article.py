@@ -11,7 +11,7 @@ from api.schemes import (
     ChangeArticleSchm,
 )
 from core import db_helper
-from services import redis_cache
+from services.redis import redis_cache
 
 router = APIRouter()
 
