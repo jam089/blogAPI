@@ -14,7 +14,7 @@ from api.schemes import (
 from core import db_helper, settings
 from core.models import Article
 from services.redis import redis_cache
-from services.elasticsearch import es, add_doc
+from services.elasticsearch import es, add_doc, update_doc
 
 router = APIRouter()
 
@@ -73,14 +73,24 @@ async def create_article(
 
 @router.patch("/{article_id}/", response_model=ReadArticleSchm)
 async def update_article(
-    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
     article_id: int,
     article_in: ChangeArticleSchm,
 ):
-    if not (article_to_update := await crud.get_article(sess, article_id)):
+    if not (article_to_update := await crud.get_article(db_sess, article_id)):
         raise HTTP_404
 
-    return await crud.update_article(sess, article_to_update, article_in)
+    article: Article = await crud.update_article(db_sess, article_to_update, article_in)
+
+    await update_doc(
+        es_session=es_sess,
+        index_name=settings.es.articles_index,
+        doc_id=article_id,
+        pydantic_object=article_in,
+    )
+
+    return article
 
 
 @router.delete("/{article_id}/", status_code=status.HTTP_204_NO_CONTENT)
