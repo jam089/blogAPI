@@ -15,7 +15,7 @@ def redis_cache(
     def decorator(func: Callable[..., Awaitable[Any]]):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            async with r_cache.rclient_getter() as cache:
+            async with r_cache.redis_client() as cache:
                 func_name = func.__name__
                 type_adapter = TypeAdapter(model_type)
 

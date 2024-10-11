@@ -17,17 +17,22 @@ class RedisHelper:
         self.url = url
         self.encoding = encoding
         self.decode_responses = decode_responses
-
-    @asynccontextmanager
-    async def rclient_getter(self) -> AsyncGenerator[Redis, None]:
-        pool = redis.ConnectionPool.from_url(
+        self.pool = redis.ConnectionPool.from_url(
             url=self.url,
             encoding=self.encoding,
             decode_responses=self.decode_responses,
         )
-        client = redis.Redis(connection_pool=pool)
-        yield client
-        await client.close()
+
+    @asynccontextmanager
+    async def redis_client(self) -> Redis:
+        redis_client = redis.Redis(connection_pool=self.pool)
+        yield redis_client
+        await redis_client.close()
+
+    async def redis_getter(self) -> AsyncGenerator[Redis, None]:
+        async with self.redis_client() as redis_sess:
+            yield redis_sess
+            await redis_sess.close()
 
 
 r_cache = RedisHelper(
