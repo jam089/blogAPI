@@ -10,11 +10,12 @@ from api.schemes import (
     ReadArticleWithCommentsSchm,
     CreateArticleSchm,
     ChangeArticleSchm,
+    ArticleSearchResponseSchm,
 )
 from core import db_helper, settings
 from core.models import Article
 from services.redis import redis_cache
-from services.elasticsearch import es, add_doc, update_doc, remove_doc
+from services.elasticsearch import es, add_doc, update_doc, remove_doc, searching_docs
 
 router = APIRouter()
 
@@ -30,6 +31,32 @@ async def get_trends_articles(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
     return await crud.get_trend_articles(sess)
+
+
+@router.get("/search/", response_model=ArticleSearchResponseSchm)
+async def search_articles(
+    db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
+    query: str,
+):
+    search_response, article_ids_list = await searching_docs(
+        es_session=es_sess,
+        index_name=settings.es.articles_index,
+        searching_string=query,
+    )
+
+    articles = {}
+
+    for article_id in article_ids_list:
+        article: Article = await crud.get_article(db_sess, article_id)
+        articles.update(
+            {article_id: ReadArticleSchm.model_validate(article).model_dump()}
+        )
+
+    return {
+        "articles": articles,
+        "search_response": search_response.body,
+    }
 
 
 @router.get("/{article_id}/", response_model=ReadArticleWithCommentsSchm)
