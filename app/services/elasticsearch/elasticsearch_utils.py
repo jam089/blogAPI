@@ -1,5 +1,6 @@
 from typing import Type, Sequence, List
 
+from elastic_transport import ObjectApiResponse
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 from sqlalchemy import select, ScalarResult
@@ -113,3 +114,31 @@ async def remove_doc(
         id=str(doc_id),
     )
     return response
+
+
+async def searching_docs(
+    es_session: AsyncElasticsearch,
+    index_name: str,
+    searching_string: str,
+) -> tuple[ObjectApiResponse, List[int]]:
+    index_mapping: dict = index_dict.get(index_name)
+    searching_query = {
+        "query": {
+            "multi_match": {
+                "query": searching_string,
+                "fields": [*index_mapping.keys()],
+            }
+        },
+        "_source": {"excludes": ["text"]},
+    }
+
+    response: ObjectApiResponse = await es_session.search(
+        index=index_name,
+        body=searching_query,
+    )
+
+    matched_ids = [
+        int(matched_doc.get("_id")) for matched_doc in response.get("hits").get("hits")
+    ]
+
+    return response, matched_ids
