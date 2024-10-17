@@ -158,3 +158,21 @@ async def check_doc(
         id=str(doc_id),
     )
     return doc_exist
+
+
+async def get_doc(
+    es_session: AsyncElasticsearch,
+    index_name: str,
+    doc_id: int,
+    pydantic_schm: Type[BaseModel] | None = None,
+) -> BaseModel | dict:
+    doc = await es_session.get(index=index_name, id=str(doc_id))
+
+    if pydantic_schm:
+        doc_dict = {
+            "id": doc.body.get("_id"),
+            **doc.body.get("_source"),
+        }
+        return pydantic_schm(**doc_dict)
+
+    return doc.body
