@@ -15,7 +15,14 @@ from api.schemes import (
 from core import db_helper, settings
 from core.models import Article
 from services.redis import redis_cache
-from services.elasticsearch import es, add_doc, update_doc, remove_doc, searching_docs
+from services.elasticsearch import (
+    es,
+    add_doc,
+    update_doc,
+    remove_doc,
+    searching_docs,
+    check_doc,
+)
 
 router = APIRouter()
 
@@ -109,6 +116,19 @@ async def update_article(
         raise HTTP_404
 
     article: Article = await crud.update_article(db_sess, article_to_update, article_in)
+
+    if not await check_doc(
+        es_session=es_sess,
+        index_name=settings.es.articles_index,
+        doc_id=article_id,
+    ):
+        unsync_article = await crud.get_article(db_sess, article_id)
+        await add_doc(
+            es_session=es_sess,
+            index_name=settings.es.articles_index,
+            sql_object=unsync_article,
+            pydantic_schm=CreateArticleSchm,
+        )
 
     await update_doc(
         es_session=es_sess,
