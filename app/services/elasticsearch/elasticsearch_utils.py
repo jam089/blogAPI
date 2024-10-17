@@ -142,3 +142,15 @@ async def searching_docs(
     ]
 
     return response, matched_ids
+
+
+async def check_doc(
+    es_session: AsyncElasticsearch,
+    index_name: str,
+    doc_id: int,
+):
+    doc_exist = await es_session.exists_source(
+        index=index_name,
+        id=str(doc_id),
+    )
+    return doc_exist
