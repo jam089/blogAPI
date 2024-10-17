@@ -61,6 +61,10 @@ class ReadArticleWithCommentsSchm(ReadArticleSchm):
     comments: List[ReadCommentSchm] | None = None
 
 
+class ESReadArticleSchm(CreatedArticleSchm):
+    pass
+
+
 class ArticleSearchResponseSchm(BaseModel):
     articles: dict[int, ReadArticleSchm]
     search_response: dict

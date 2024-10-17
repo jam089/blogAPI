@@ -7,6 +7,7 @@ __all__ = (
     "ChangeCommentSchm",
     "ReadCommentSchm",
     "ArticleSearchResponseSchm",
+    "ESReadArticleSchm",
 )
 
 
@@ -16,5 +17,6 @@ from .article import (
     ReadArticleSchm,
     ReadArticleWithCommentsSchm,
     ArticleSearchResponseSchm,
+    ESReadArticleSchm,
 )
 from .comment import CreateCommentSchm, ChangeCommentSchm, ReadCommentSchm
