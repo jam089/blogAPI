@@ -108,7 +108,11 @@ async def remove_doc(
     es_session: AsyncElasticsearch,
     index_name: str,
     doc_id: int,
-) -> dict:
+) -> dict | None:
+
+    if not await check_doc(es_session, index_name, doc_id):
+        return None
+
     response = await es_session.delete(
         index=index_name,
         id=str(doc_id),
