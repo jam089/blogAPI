@@ -47,8 +47,11 @@ class ChangeArticleSchm(BaseArticleSchm):
     )
 
 
-class ReadArticleSchm(CreateArticleSchm):
+class CreatedArticleSchm(CreateArticleSchm):
     id: int
+
+
+class ReadArticleSchm(CreatedArticleSchm):
     created_at: datetime
     last_updated_at: datetime | None = None
     score: float
