@@ -11,6 +11,7 @@ from api.schemes import (
     CreateArticleSchm,
     ChangeArticleSchm,
     ArticleSearchResponseSchm,
+    ESReadArticleSchm,
 )
 from core import db_helper, settings
 from core.models import Article
@@ -22,6 +23,7 @@ from services.elasticsearch import (
     remove_doc,
     searching_docs,
     check_doc,
+    get_doc,
 )
 
 router = APIRouter()
@@ -115,20 +117,37 @@ async def update_article(
     if not (article_to_update := await crud.get_article(db_sess, article_id)):
         raise HTTP_404
 
-    article: Article = await crud.update_article(db_sess, article_to_update, article_in)
-
     if not await check_doc(
         es_session=es_sess,
         index_name=settings.es.articles_index,
         doc_id=article_id,
     ):
-        unsync_article = await crud.get_article(db_sess, article_id)
         await add_doc(
             es_session=es_sess,
             index_name=settings.es.articles_index,
-            sql_object=unsync_article,
+            sql_object=article_to_update,
             pydantic_schm=CreateArticleSchm,
         )
+
+    article_before_update_in_pydantic = ESReadArticleSchm.model_validate(
+        article_to_update
+    )
+    es_article_before_update_in_pydantic = await get_doc(
+        es_session=es_sess,
+        index_name=settings.es.articles_index,
+        doc_id=article_id,
+        pydantic_schm=ESReadArticleSchm,
+    )
+
+    if not (article_before_update_in_pydantic == es_article_before_update_in_pydantic):
+        await add_doc(
+            es_session=es_sess,
+            index_name=settings.es.articles_index,
+            sql_object=article_to_update,
+            pydantic_schm=CreateArticleSchm,
+        )
+
+    article: Article = await crud.update_article(db_sess, article_to_update, article_in)
 
     await update_doc(
         es_session=es_sess,
