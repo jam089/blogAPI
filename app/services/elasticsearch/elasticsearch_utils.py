@@ -58,6 +58,13 @@ async def indexing_docs(
     sql_model: Type[Base],
     pydantic_schm: Type[BaseModel],
 ) -> dict[str, int | List[int]]:
+    index_info = await es_session.cat.indices(index=index_name, format="json")
+    docs_qty = int(index_info[0].get("docs.count"))
+
+    if docs_qty:
+        query = {"match_all": {}}
+        await es_session.delete_by_query(index=index_name, query=query)
+
     success, failed = await async_bulk(
         client=es_session,
         actions=gen_data_to_bulk(
