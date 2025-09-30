@@ -21,7 +21,7 @@ R = TypeVar("R")
 
 def redis_cache(
     model_type: Type,
-    expire: int | None = settings.cache.resp.expire,
+    expire: int | None = settings.cache.resp.expire_s,
     inactive: bool = settings.cache.resp.inactive,
 ) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
     def decorator(func: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[R]]:

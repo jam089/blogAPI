@@ -21,7 +21,7 @@ class DBSettings(BaseModel):
 
 
 class ResponseCache(BaseModel):
-    expire: int | None = 7
+    expire_s: int | None = 7
     inactive: bool = False
 
 
