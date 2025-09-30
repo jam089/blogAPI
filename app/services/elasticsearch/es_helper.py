@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, AsyncIterator
 
 from core import settings
 
@@ -14,7 +14,7 @@ class ESHelper:
         self.url_list = url_list
 
     @asynccontextmanager
-    async def es_client(self) -> AsyncElasticsearch:
+    async def es_client(self) -> AsyncIterator[AsyncElasticsearch]:
         es_client = AsyncElasticsearch(hosts=self.url_list)
         yield es_client
         await es_client.close()

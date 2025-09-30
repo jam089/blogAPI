@@ -17,20 +17,20 @@ async def get_all_articles(sess: AsyncSession) -> Sequence[Article]:
 async def get_article(
     sess: AsyncSession,
     article_id: int,
-) -> Article:
+) -> Article | None:
     stmt = (
         select(Article)
         .options(selectinload(Article.comments))
         .where(Article.id == article_id)
     )
-    article: Article = await sess.scalar(stmt)
+    article: Article | None = await sess.scalar(stmt)
     return article
 
 
 async def get_trend_articles(
     sess: AsyncSession,
 ) -> Sequence[Article]:
-    stmt = select(Article).order_by(Article.absolut_score.desc()).limit(20)
+    stmt = select(Article).order_by(Article.absolut_score.desc()).limit(20)  # type: ignore[attr-defined]
     result: ScalarResult = await sess.scalars(stmt)
     return result.all()
 
@@ -69,7 +69,7 @@ async def delete_article(
 
 async def bulk_load_article(
     sess: AsyncSession,
-    json_file: list[dict[Article]],
+    json_file: list[dict],
 ) -> bool:
     try:
         stmt = insert(Article).values(json_file)
@@ -81,7 +81,7 @@ async def bulk_load_article(
         return False
 
 
-async def inactive_imported_articles(sess: AsyncSession):
+async def inactive_imported_articles(sess: AsyncSession) -> None:
     update_value = {"import_article_id": -9999}
     stmt = (
         update(Article)

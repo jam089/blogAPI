@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api import crud
 from api.schemes import ReadCommentSchm, CreateCommentSchm, ChangeCommentSchm
 from core import db_helper
+from core.models import Comment
 
 router = APIRouter()
 
@@ -24,7 +25,7 @@ HTTP_404_article = HTTPException(
 async def get_comments_of_article(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     article_id: int,
-):
+) -> Sequence[Comment]:
     if article := await crud.get_article(sess, article_id):
         return await crud.get_comments_of_article(sess, article)
 
@@ -35,7 +36,7 @@ async def get_comments_of_article(
 async def get_comment(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     comment_id: int,
-):
+) -> Comment:
     if comment := await crud.get_comment(sess, comment_id):
         return comment
 
@@ -50,7 +51,7 @@ async def get_comment(
 async def create_comment(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     comment_in: CreateCommentSchm,
-):
+) -> Comment:
     if await crud.get_article(sess, comment_in.article_id):
         return await crud.create_comment(sess, comment_in)
 
@@ -62,7 +63,7 @@ async def update_comment(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     comment_id: int,
     comment_in: ChangeCommentSchm,
-):
+) -> Comment:
     if comment_to_update := await crud.get_comment(sess, comment_id):
         return await crud.update_comment(sess, comment_to_update, comment_in)
 
@@ -73,7 +74,7 @@ async def update_comment(
 async def delete_comment(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     comment_id: int,
-):
+) -> None:
     if not (comment_to_delete := await crud.get_comment(sess, comment_id)):
         raise HTTP_404_comment
 

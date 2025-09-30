@@ -1,8 +1,7 @@
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, AsyncIterator
 
-import redis.asyncio as redis
-from redis import Redis
+from redis.asyncio import Redis, ConnectionPool
 
 from core import settings
 
@@ -17,15 +16,15 @@ class RedisHelper:
         self.url = url
         self.encoding = encoding
         self.decode_responses = decode_responses
-        self.pool = redis.ConnectionPool.from_url(
+        self.pool = ConnectionPool.from_url(
             url=self.url,
             encoding=self.encoding,
             decode_responses=self.decode_responses,
         )
 
     @asynccontextmanager
-    async def redis_client(self) -> Redis:
-        redis_client = redis.Redis(connection_pool=self.pool)
+    async def redis_client(self) -> AsyncIterator[Redis]:
+        redis_client = Redis(connection_pool=self.pool)
         yield redis_client
         await redis_client.close()
 

@@ -17,8 +17,8 @@ router = APIRouter()
 
 @router.get("/import-data/", status_code=status.HTTP_201_CREATED)
 async def import_data_from_file(
-    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)]
-):
+    sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+) -> None:
     articles_flg = await crud.bulk_load_article(
         sess,
         json_read(settings.api.admin.data_import.article_import_json),

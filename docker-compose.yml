@@ -20,17 +20,24 @@ services:
     command: ["redis-server",
               "--requirepass", "radmin",
               "--appendonly", "yes"]
+    networks:
+      - dev_back
 
   elasticsearch:
     image: elasticsearch:8.15.2
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
-      - ELASTIC_PASSWORD=guest
       - xpack.security.enabled=false
+      - http.port=9200
+      - http.cors.allow-origin=http://0.0.0.0:1358
+      - http.cors.enabled=true
+      - http.cors.allow-methods=OPTIONS,HEAD,GET,POST,PUT,DELETE
+      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+      - http.cors.allow-credentials=true
+      - network.publish_host=localhost
     ports:
       - "9200:9200"
-      - "9300:9300"
     volumes:
       - esdata:/var/lib/elasticsearch/data
     networks:
@@ -45,9 +52,23 @@ services:
           memory: 2g
 
   adminer:
-    image: adminer
+    image: adminer:latest
     ports:
       - "8080:8080"
+
+  dejavu:
+    image: appbaseio/dejavu:latest
+    ports:
+      - "1358:1358"
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:radmin
+    ports:
+      - "8081:8081"
+    networks:
+      - "dev_back"
 
 volumes:
   pgdata:
@@ -59,3 +80,4 @@ volumes:
 
 networks:
   esnet:
+  dev_back:

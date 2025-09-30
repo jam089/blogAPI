@@ -1,21 +1,26 @@
-from typing import Type, Sequence, List
+from typing import Type, Sequence, List, Any, AsyncGenerator, TypeVar, cast
 
-from elastic_transport import ObjectApiResponse
+from elastic_transport import ObjectApiResponse, HeadApiResponse
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 from sqlalchemy import select, ScalarResult
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Base
 
 from services.elasticsearch.es_helper import es
 from services.elasticsearch.es_index_mapping import index_dict
 
+T = TypeVar("T", bound=Base)
 
-async def create_index(index_name: str, index_map: dict) -> dict:
+
+async def create_index(
+    index_name: str, index_map: dict
+) -> ObjectApiResponse[dict[str, Any]]:
     index_body = {"mappings": {"properties": {**index_map}}}
     async with es.es_client() as es_sess:  # type: AsyncElasticsearch
-        response = await es_sess.indices.create(
+        response = await es_sess.indices.create(  # type: ignore[call-arg]
             index=index_name,
             body=index_body,
             ignore=400,
@@ -23,26 +28,31 @@ async def create_index(index_name: str, index_map: dict) -> dict:
     return response
 
 
-async def check_index(index_name: str) -> dict | None:
+async def check_index(index_name: str) -> ObjectApiResponse[dict[str, Any]] | None:
     async with es.es_client() as es_sess:  # type: AsyncElasticsearch
         if not await es_sess.indices.exists(index=index_name):
+            index_map: dict | None = index_dict.get(index_name)
+            if index_map is None:
+                return None
             response = await create_index(
-                index_name=index_name, index_map=index_dict.get(index_name)
+                index_name=index_name,
+                index_map=index_map,
             )
             return response
+        return None
 
 
 async def gen_data_to_bulk(
-    db_session,
+    db_session: AsyncSession,
     index_name: str,
-    sql_model: Type[Base],
+    sql_model: Type[T],
     pydantic_schm: Type[BaseModel],
-) -> dict:
+) -> AsyncGenerator[dict, None]:
     stmt = select(sql_model)
     result: ScalarResult = await db_session.scalars(stmt)
-    sql_objects_list: Sequence[sql_model] = result.all()
+    sql_objects_list: Sequence[T] = result.all()
 
-    for sql_obj in sql_objects_list:  # type: sql_model
+    for sql_obj in sql_objects_list:  # type: T
         data_for_es = pydantic_schm.model_validate(sql_obj)
         yield {
             "_index": index_name,
@@ -52,17 +62,22 @@ async def gen_data_to_bulk(
 
 
 async def indexing_docs(
-    db_session,
+    db_session: AsyncSession,
     es_session: AsyncElasticsearch,
     index_name: str,
     sql_model: Type[Base],
     pydantic_schm: Type[BaseModel],
 ) -> dict[str, int | List[int]]:
-    index_info = await es_session.cat.indices(index=index_name, format="json")
-    docs_qty = int(index_info[0].get("docs.count"))
+    index_info = cast(
+        list[dict[str, str]],
+        await es_session.cat.indices(
+            index=index_name,
+            format="json",
+        ),
+    )
 
-    if docs_qty:
-        query = {"match_all": {}}
+    if (docs_qty := index_info[0].get("docs.count")) and int(docs_qty):
+        query: dict[str, dict] = {"match_all": {}}
         await es_session.delete_by_query(index=index_name, query=query)
 
     success, failed = await async_bulk(
@@ -86,7 +101,7 @@ async def add_doc(
     index_name: str,
     sql_object: Base,
     pydantic_schm: Type[BaseModel],
-) -> dict:
+) -> ObjectApiResponse[dict]:
     data_for_es = pydantic_schm.model_validate(sql_object)
     response = await es_session.index(
         index=index_name,
@@ -101,7 +116,7 @@ async def update_doc(
     index_name: str,
     doc_id: int,
     pydantic_object: BaseModel,
-) -> dict:
+) -> ObjectApiResponse[dict]:
     update_body = {"doc": pydantic_object.model_dump(exclude_unset=True)}
     response = await es_session.update(
         index=index_name,
@@ -115,7 +130,7 @@ async def remove_doc(
     es_session: AsyncElasticsearch,
     index_name: str,
     doc_id: int,
-) -> dict | None:
+) -> ObjectApiResponse[dict] | None:
 
     if not await check_doc(es_session, index_name, doc_id):
         return None
@@ -132,7 +147,7 @@ async def searching_docs(
     index_name: str,
     searching_string: str,
 ) -> tuple[ObjectApiResponse, List[int]]:
-    index_mapping: dict = index_dict.get(index_name)
+    index_mapping: dict = index_dict[index_name]
     searching_query = {
         "query": {
             "multi_match": {
@@ -159,7 +174,7 @@ async def check_doc(
     es_session: AsyncElasticsearch,
     index_name: str,
     doc_id: int,
-):
+) -> HeadApiResponse:
     doc_exist = await es_session.exists_source(
         index=index_name,
         id=str(doc_id),
@@ -172,13 +187,15 @@ async def get_doc(
     index_name: str,
     doc_id: int,
     pydantic_schm: Type[BaseModel] | None = None,
-) -> BaseModel | dict:
-    doc = await es_session.get(index=index_name, id=str(doc_id))
+) -> BaseModel | dict[str, Any]:
+    doc: ObjectApiResponse[dict[str, Any]] = await es_session.get(
+        index=index_name, id=str(doc_id)
+    )
 
     if pydantic_schm:
         doc_dict = {
             "id": doc.body.get("_id"),
-            **doc.body.get("_source"),
+            **doc.body["_source"],
         }
         return pydantic_schm(**doc_dict)
 

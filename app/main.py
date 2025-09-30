@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import AsyncIterator
 
 from fastapi import FastAPI
 import uvicorn
@@ -9,7 +10,7 @@ from services.elasticsearch import check_index as es_check_idx
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await es_check_idx(index_name=settings.es.articles_index)
     yield
 

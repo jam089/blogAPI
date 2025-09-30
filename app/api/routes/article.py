@@ -38,7 +38,7 @@ HTTP_404 = HTTPException(
 @redis_cache(model_type=Sequence[ReadArticleSchm])
 async def get_trends_articles(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-):
+) -> Sequence[Article]:
     return await crud.get_trend_articles(sess)
 
 
@@ -47,7 +47,7 @@ async def search_articles(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
     query: str,
-):
+) -> dict[str, Article | dict]:
     search_response, article_ids_list = await searching_docs(
         es_session=es_sess,
         index_name=settings.es.articles_index,
@@ -57,7 +57,9 @@ async def search_articles(
     articles = {}
 
     for article_id in article_ids_list:
-        article: Article = await crud.get_article(db_sess, article_id)
+        article: Article | None = await crud.get_article(db_sess, article_id)
+        if not article:
+            break
         articles.update(
             {article_id: ReadArticleSchm.model_validate(article).model_dump()}
         )
@@ -72,7 +74,7 @@ async def search_articles(
 async def get_article(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     article_id: int,
-):
+) -> Article:
     if result := await crud.get_article(sess, article_id):
         return result
 
@@ -83,7 +85,7 @@ async def get_article(
 @redis_cache(model_type=Sequence[ReadArticleSchm])
 async def get_all_articles(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-):
+) -> Sequence[Article]:
     return await crud.get_all_articles(sess)
 
 
@@ -96,7 +98,7 @@ async def create_article(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
     article_in: CreateArticleSchm,
-):
+) -> Article:
     article: Article = await crud.create_article(db_sess, article_in=article_in)
     await add_doc(
         es_session=es_sess,
@@ -113,7 +115,7 @@ async def update_article(
     es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
     article_id: int,
     article_in: ChangeArticleSchm,
-):
+) -> Article:
     if not (article_to_update := await crud.get_article(db_sess, article_id)):
         raise HTTP_404
 
@@ -164,7 +166,7 @@ async def delete_article(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
     article_id: int,
-):
+) -> None:
     if not (article_to_delete := await crud.get_article(db_sess, article_id)):
         raise HTTP_404
 

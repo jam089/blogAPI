@@ -1,4 +1,4 @@
-__all__ = {
+__all__ = (
     "es",
     "create_index",
     "check_index",
@@ -9,7 +9,7 @@ __all__ = {
     "searching_docs",
     "check_doc",
     "get_doc",
-}
+)
 
 from services.elasticsearch.es_helper import es
 from services.elasticsearch.elasticsearch_utils import (
