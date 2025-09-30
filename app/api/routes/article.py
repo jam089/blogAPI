@@ -141,7 +141,7 @@ async def update_article(
         pydantic_schm=ESReadArticleSchm,
     )
 
-    if not (article_before_update_in_pydantic == es_article_before_update_in_pydantic):
+    if article_before_update_in_pydantic != es_article_before_update_in_pydantic:
         await add_doc(
             es_session=es_sess,
             index_name=settings.es.articles_index,
