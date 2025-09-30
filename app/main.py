@@ -1,11 +1,10 @@
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import FastAPI
 import uvicorn
-
-from core import settings
 from api import router as api_router
+from core import settings
+from fastapi import FastAPI
 from services.elasticsearch import check_index as es_check_idx
 
 

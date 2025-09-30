@@ -1,6 +1,5 @@
 from core import settings
 
-
 article = {
     "title": {
         "type": "text",

@@ -1,11 +1,9 @@
+from core import settings
 from fastapi import APIRouter
 
+from .routes.administration import router as admin_router
 from .routes.article import router as articles_router
 from .routes.comment import router as comments_router
-from .routes.administration import router as admin_router
-
-from core import settings
-
 
 router = APIRouter(prefix=settings.api.prefix)
 

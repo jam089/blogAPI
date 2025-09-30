@@ -1,18 +1,18 @@
 from functools import wraps
 from typing import (
+    Any,
     Awaitable,
     Callable,
-    Any,
-    Type,
-    Sequence,
-    get_args,
-    TypeVar,
     ParamSpec,
+    Sequence,
+    Type,
+    TypeVar,
+    get_args,
 )
 
+from core import settings
 from pydantic import TypeAdapter
 
-from core import settings
 from services.redis.redis_helper import r_cache
 
 P = ParamSpec("P")

@@ -1,11 +1,11 @@
 from typing import Sequence
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, ScalarResult
-
 from core import settings
-from core.models import Comment, Article
-from api.schemes import CreateCommentSchm, ChangeCommentSchm
+from core.models import Article, Comment
+from sqlalchemy import ScalarResult, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.schemes import ChangeCommentSchm, CreateCommentSchm
 
 
 async def get_comment(

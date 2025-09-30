@@ -1,16 +1,16 @@
 from typing import Annotated, List
 
+from core import db_helper, settings
+from core.models import Article
+from core.utils.file_utils import json_read
 from elasticsearch import AsyncElasticsearch
 from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
+from services.elasticsearch import es, indexing_docs
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import crud
-from core import db_helper, settings
-from core.utils.file_utils import json_read
-from core.models import Article
 from api.schemes import CreateArticleSchm
-from services.elasticsearch import indexing_docs, es
 
 router = APIRouter()
 

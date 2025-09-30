@@ -1,29 +1,29 @@
 from typing import Annotated, Sequence
 
+from core import db_helper, settings
+from core.models import Article
 from elasticsearch import AsyncElasticsearch
 from fastapi import APIRouter, Depends, HTTPException, status
+from services.elasticsearch import (
+    add_doc,
+    check_doc,
+    es,
+    get_doc,
+    remove_doc,
+    searching_docs,
+    update_doc,
+)
+from services.redis import redis_cache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import crud
 from api.schemes import (
+    ArticleSearchResponseSchm,
+    ChangeArticleSchm,
+    CreateArticleSchm,
+    ESReadArticleSchm,
     ReadArticleSchm,
     ReadArticleWithCommentsSchm,
-    CreateArticleSchm,
-    ChangeArticleSchm,
-    ArticleSearchResponseSchm,
-    ESReadArticleSchm,
-)
-from core import db_helper, settings
-from core.models import Article
-from services.redis import redis_cache
-from services.elasticsearch import (
-    es,
-    add_doc,
-    update_doc,
-    remove_doc,
-    searching_docs,
-    check_doc,
-    get_doc,
 )
 
 router = APIRouter()

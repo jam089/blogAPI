@@ -5,6 +5,6 @@ __all__ = (
 )
 
 
-from .base import Base
 from .article import Article
+from .base import Base
 from .comment import Comment

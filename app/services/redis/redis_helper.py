@@ -1,9 +1,8 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, AsyncIterator
 
-from redis.asyncio import Redis, ConnectionPool
-
 from core import settings
+from redis.asyncio import ConnectionPool, Redis
 
 
 class RedisHelper:

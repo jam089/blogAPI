@@ -1,12 +1,12 @@
 from typing import Annotated, Sequence
 
+from core import db_helper
+from core.models import Comment
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import crud
-from api.schemes import ReadCommentSchm, CreateCommentSchm, ChangeCommentSchm
-from core import db_helper
-from core.models import Comment
+from api.schemes import ChangeCommentSchm, CreateCommentSchm, ReadCommentSchm
 
 router = APIRouter()
 

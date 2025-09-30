@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
-
 from core import settings
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BaseCommentSchm(BaseModel):

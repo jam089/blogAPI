@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator, AsyncIterator
 
 from core import settings
-
 from elasticsearch import AsyncElasticsearch
 
 

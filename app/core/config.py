@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from pydantic import BaseModel, PostgresDsn, RedisDsn, AnyUrl
+from pydantic import AnyUrl, BaseModel, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 BASE_DIR = Path(__file__).parent.parent
 

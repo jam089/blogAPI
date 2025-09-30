@@ -1,11 +1,10 @@
 from datetime import datetime
 from typing import List
 
+from core import settings
 from pydantic import BaseModel, ConfigDict, Field
 
 from .comment import ReadCommentSchm
-
-from core import settings
 
 
 class BaseArticleSchm(BaseModel):

@@ -1,9 +1,8 @@
-from sqlalchemy import Unicode, UnicodeText, Integer, select, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, Unicode, UnicodeText, func, select
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
-
 from .comment import Comment
 
 
