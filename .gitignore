@@ -3,3 +3,5 @@
 .env
 */certs
 locustfile.py
+/app/import_data/comments.json
+/app/import_data/articles.json
