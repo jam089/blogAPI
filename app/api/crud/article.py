@@ -88,7 +88,7 @@ async def inactive_imported_articles(sess: AsyncSession) -> None:
         .values(update_value)
         .where(
             or_(
-                Article.import_article_id != None,
+                Article.import_article_id is not None,
                 Article.import_article_id != -9999,
             )
         )
