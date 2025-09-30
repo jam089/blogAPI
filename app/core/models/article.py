@@ -44,10 +44,11 @@ class Article(Base):
             score_sum += comment.score
         return score_sum
 
-    @absolut_score.expression # type: ignore[no-redef]
+    @absolut_score.expression  # type: ignore[no-redef]
     def absolut_score(cls):
         return (
-            select(func.count(Comment.score))
+            select(func.coalesce(func.sum(Comment.score), 0))
             .where(Comment.article_id == cls.id)
-            .label("absolut_score")
+            .correlate(cls)
+            .scalar_subquery()
         )
