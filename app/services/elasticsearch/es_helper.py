@@ -11,10 +11,14 @@ class ESHelper:
         url_list: list[str],
     ):
         self.url_list = url_list
+        self.request_timeout = settings.es.request_timeout_s
 
     @asynccontextmanager
     async def es_client(self) -> AsyncIterator[AsyncElasticsearch]:
-        es_client = AsyncElasticsearch(hosts=self.url_list)
+        es_client = AsyncElasticsearch(
+            hosts=self.url_list,
+            request_timeout=self.request_timeout,
+        )
         yield es_client
         await es_client.close()
 

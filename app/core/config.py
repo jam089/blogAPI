@@ -35,6 +35,7 @@ class CacheSettings(BaseModel):
 class ElasticSearchSettings(BaseModel):
     url: AnyUrl
     articles_index: str = "articles"
+    request_timeout_s: int | None = 60
 
 
 class DataImportSettings(BaseModel):
