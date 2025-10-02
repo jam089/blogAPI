@@ -5,8 +5,8 @@ from elastic_transport import HeadApiResponse, ObjectApiResponse
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 from pydantic import BaseModel
-from sqlalchemy import ScalarResult, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncScalarResult
 
 from services.elasticsearch.es_helper import es
 from services.elasticsearch.es_index_mapping import index_dict
@@ -45,17 +45,16 @@ async def check_index(
     return None
 
 
-async def gen_data_to_bulk(
+async def get_data_to_indexing(
     db_session: AsyncSession,
     index_name: str,
     sql_model: Type[T],
     pydantic_schm: Type[BaseModel],
 ) -> AsyncGenerator[dict, None]:
     stmt = select(sql_model)
-    result: ScalarResult = await db_session.scalars(stmt)
-    sql_objects_list: Sequence[T] = result.all()
+    stream: AsyncScalarResult = await db_session.stream_scalars(stmt)
 
-    for sql_obj in sql_objects_list:  # type: T
+    async for sql_obj in stream:  # type: T
         data_for_es = pydantic_schm.model_validate(sql_obj)
         yield {
             "_index": index_name,
@@ -85,7 +84,7 @@ async def indexing_docs(
 
     success, failed = await async_bulk(
         client=es_session,
-        actions=gen_data_to_bulk(
+        actions=get_data_to_indexing(
             db_session,
             index_name,
             sql_model,
