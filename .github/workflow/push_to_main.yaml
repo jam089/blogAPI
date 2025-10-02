@@ -1,0 +1,40 @@
+name: Push/PR to main
+on:
+  push:
+    branches: ["main"]
+    paths-ignore:
+      - tests/integration_tests/
+  pull_request:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: python:3.12.10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          pip install poetry
+          poetry install --with dev
+
+      - name: Black checking
+        run: poetry run black --check .
+
+      - name: Ruff checking
+        run: poetry run ruff check . --output-format=github
+
+      - name: MyPy checking
+        run: poetry run mypy . --junit-xml=mypy-report.xml
+
+      - name: Upload test report
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: mypy-report.xml
+          require_tests: true
