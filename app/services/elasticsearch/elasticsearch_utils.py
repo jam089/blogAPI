@@ -1,4 +1,5 @@
 from typing import Any, AsyncGenerator, List, Sequence, Type, TypeVar, cast
+import logging
 
 from core.models import Base
 from elastic_transport import ObjectApiResponse
@@ -12,6 +13,8 @@ from services.elasticsearch.es_helper import es
 from services.elasticsearch.es_index_mapping import index_dict
 
 T = TypeVar("T", bound=Base)
+
+logger = logging.getLogger("uvicorn.elastic_search")
 
 
 async def create_index(
@@ -32,9 +35,12 @@ async def check_index(
     index_name: str,
 ) -> ObjectApiResponse[dict[str, Any]] | None:
     es_session: AsyncElasticsearch = es.get_es_connection()
+    logger.info("Check index existing")
     if not await es_session.indices.exists(index=index_name):
+        logger.info("Index not exist. Creating...")
         index_map: dict | None = index_dict.get(index_name)
         if index_map is None:
+            logger.error("No index map for create index")
             return None
         response = await create_index(
             es_session=es_session,
@@ -42,6 +48,7 @@ async def check_index(
             index_map=index_map,
         )
         return response
+    logger.info("Index was created")
     return None
 
 
