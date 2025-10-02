@@ -11,7 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncScalarResult
 
 from services.elasticsearch.es_helper import es
-from services.elasticsearch.es_index_mapping import index_dict
+from services.elasticsearch.es_index_mapping import index_dict, fields_weight
 
 T = TypeVar("T", bound=Base)
 
@@ -158,12 +158,11 @@ async def searching_docs(
     index_name: str,
     searching_string: str,
 ) -> tuple[ObjectApiResponse, List[int]]:
-    index_mapping: dict = index_dict[index_name]
     searching_query = {
         "query": {
             "multi_match": {
                 "query": searching_string,
-                "fields": [*index_mapping.keys()],
+                "fields": fields_weight,
             }
         },
         "_source": {"excludes": ["text"]},
