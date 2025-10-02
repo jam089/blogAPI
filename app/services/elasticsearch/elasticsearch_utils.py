@@ -1,7 +1,7 @@
 from typing import Any, AsyncGenerator, List, Sequence, Type, TypeVar, cast
 
 from core.models import Base
-from elastic_transport import HeadApiResponse, ObjectApiResponse
+from elastic_transport import ObjectApiResponse
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 from pydantic import BaseModel
@@ -176,12 +176,12 @@ async def check_doc(
     es_session: AsyncElasticsearch,
     index_name: str,
     doc_id: int,
-) -> HeadApiResponse:
+) -> bool:
     doc_exist = await es_session.exists_source(
         index=index_name,
         id=str(doc_id),
     )
-    return doc_exist
+    return doc_exist.body
 
 
 async def get_doc(
