@@ -3,6 +3,7 @@ import logging
 
 from core import settings
 from elasticsearch import AsyncElasticsearch
+from elasticsearch.exceptions import ConnectionError
 
 logger = logging.getLogger("uvicorn.elastic_search")
 
@@ -30,11 +31,15 @@ class ESHelper:
         logger.info("ES connection established")
         return self._connection
 
-    def es_close_connection(self) -> None:
-        self._connection.close()
+    async def es_close_connection(self) -> None:
+        if self._connection:
+            await self._connection.close()
 
     def get_es_connection(self) -> AsyncElasticsearch:
-        return self._connection
+        if self._connection:
+            return self._connection
+        else:
+            raise ConnectionError("ES connection not established yet.")
 
 
 es = ESHelper(

@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await es.es_connect()
     await es_check_idx(index_name=settings.es.articles_index)
     yield
-    es.es_close_connection()
+    await es.es_close_connection()
     await r_cache.close_pool()
 
 
