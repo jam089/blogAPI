@@ -18,19 +18,18 @@ class ESHelper:
         self._connection: AsyncElasticsearch | None = None
 
     async def es_connect(self) -> AsyncElasticsearch:
-        connection = AsyncElasticsearch(
+        self._connection = AsyncElasticsearch(
             hosts=self.url_list,
             request_timeout=self.request_timeout,
         )
-        self._connection = connection
         ping = False
         logger.info("Connectin to ES...")
         while not ping:
-            ping = await connection.ping()
+            ping = await self._connection.ping()
             logger.info("Still try to connect ot ES...")
             await asyncio.sleep(7)
         logger.info("ES connection established")
-        return connection
+        return self._connection
 
     def es_close_connection(self) -> None:
         self._connection.close()
