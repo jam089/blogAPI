@@ -119,11 +119,10 @@ async def update_doc(
     doc_id: int,
     pydantic_object: BaseModel,
 ) -> ObjectApiResponse[dict]:
-    update_body = {"doc": pydantic_object.model_dump(exclude_unset=True)}
     response = await es_session.update(
         index=index_name,
         id=str(doc_id),
-        body=update_body,
+        doc=pydantic_object.model_dump(exclude_unset=True),
     )
     return response
 
