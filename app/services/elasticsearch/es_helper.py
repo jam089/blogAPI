@@ -1,8 +1,11 @@
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator, AsyncIterator
+import asyncio
+import logging
 
 from core import settings
 from elasticsearch import AsyncElasticsearch
+
+
+logger = logging.getLogger("uvicorn.elastic_search")
 
 
 class ESHelper:
@@ -12,20 +15,28 @@ class ESHelper:
     ):
         self.url_list = url_list
         self.request_timeout = settings.es.request_timeout_s
+        self._connection: AsyncElasticsearch | None = None
 
-    @asynccontextmanager
-    async def es_client(self) -> AsyncIterator[AsyncElasticsearch]:
-        es_client = AsyncElasticsearch(
+    async def es_connect(self) -> AsyncElasticsearch:
+        connection = AsyncElasticsearch(
             hosts=self.url_list,
             request_timeout=self.request_timeout,
         )
-        yield es_client
-        await es_client.close()
+        self._connection = connection
+        ping = False
+        logger.info("Connectin to ES...")
+        while not ping:
+            ping = await connection.ping()
+            logger.info("Still try to connect ot ES...")
+            await asyncio.sleep(7)
+        logger.info("ES connection established")
+        return connection
 
-    async def es_getter(self) -> AsyncGenerator[AsyncElasticsearch, None]:
-        async with self.es_client() as es_sess:
-            yield es_sess
-            await es_sess.close()
+    def es_close_connection(self) -> None:
+        self._connection.close()
+
+    def get_es_connection(self) -> AsyncElasticsearch:
+        return self._connection
 
 
 es = ESHelper(

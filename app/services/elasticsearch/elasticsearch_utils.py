@@ -15,30 +15,34 @@ T = TypeVar("T", bound=Base)
 
 
 async def create_index(
-    index_name: str, index_map: dict
+    es_session: AsyncElasticsearch,
+    index_name: str,
+    index_map: dict,
 ) -> ObjectApiResponse[dict[str, Any]]:
     index_body = {"mappings": {"properties": {**index_map}}}
-    async with es.es_client() as es_sess:  # type: AsyncElasticsearch
-        response = await es_sess.indices.create(  # type: ignore[call-arg]
-            index=index_name,
-            body=index_body,
-            ignore=400,
-        )
+    response = await es_session.indices.create(  # type: ignore[call-arg]
+        index=index_name,
+        body=index_body,
+        ignore=400,
+    )
     return response
 
 
-async def check_index(index_name: str) -> ObjectApiResponse[dict[str, Any]] | None:
-    async with es.es_client() as es_sess:  # type: AsyncElasticsearch
-        if not await es_sess.indices.exists(index=index_name):
-            index_map: dict | None = index_dict.get(index_name)
-            if index_map is None:
-                return None
-            response = await create_index(
-                index_name=index_name,
-                index_map=index_map,
-            )
-            return response
-        return None
+async def check_index(
+    index_name: str,
+) -> ObjectApiResponse[dict[str, Any]] | None:
+    es_session: AsyncElasticsearch = es.get_es_connection()
+    if not await es_session.indices.exists(index=index_name):
+        index_map: dict | None = index_dict.get(index_name)
+        if index_map is None:
+            return None
+        response = await create_index(
+            es_session=es_session,
+            index_name=index_name,
+            index_map=index_map,
+        )
+        return response
+    return None
 
 
 async def gen_data_to_bulk(

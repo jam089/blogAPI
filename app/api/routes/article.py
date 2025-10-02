@@ -45,7 +45,7 @@ async def get_trends_articles(
 @router.get("/search/", response_model=ArticleSearchResponseSchm)
 async def search_articles(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.get_es_connection)],
     query: str,
 ) -> dict[str, Article | dict]:
     search_response, article_ids_list = await searching_docs(
@@ -96,7 +96,7 @@ async def get_all_articles(
 )
 async def create_article(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.get_es_connection)],
     article_in: CreateArticleSchm,
 ) -> Article:
     article: Article = await crud.create_article(db_sess, article_in=article_in)
@@ -112,7 +112,7 @@ async def create_article(
 @router.patch("/{article_id}/", response_model=ReadArticleSchm)
 async def update_article(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.get_es_connection)],
     article_id: int,
     article_in: ChangeArticleSchm,
 ) -> Article:
@@ -164,7 +164,7 @@ async def update_article(
 @router.delete("/{article_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_article(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.get_es_connection)],
     article_id: int,
 ) -> None:
     if not (article_to_delete := await crud.get_article(db_sess, article_id)):

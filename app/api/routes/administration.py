@@ -39,7 +39,7 @@ async def import_data_from_file(
 @router.get("/es_index_articles/")
 async def index_articles(
     db_sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    es_sess: Annotated[AsyncElasticsearch, Depends(es.es_getter)],
+    es_sess: Annotated[AsyncElasticsearch, Depends(es.get_es_connection)],
 ) -> dict[str, int | List[int]]:
     return await indexing_docs(
         db_session=db_sess,
