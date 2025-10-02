@@ -165,9 +165,8 @@ async def searching_docs(
         body=searching_query,
     )
 
-    matched_ids = [
-        int(matched_doc.get("_id")) for matched_doc in response.get("hits").get("hits")
-    ]
+    hits = response.body["hits"]["hits"]
+    matched_ids = [int(doc.get("_id")) for doc in hits if "_id" in doc]
 
     return response, matched_ids
 
