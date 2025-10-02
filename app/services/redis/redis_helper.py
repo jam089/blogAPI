@@ -20,12 +20,13 @@ class RedisHelper:
             encoding=self.encoding,
             decode_responses=self.decode_responses,
         )
+        self._client: Redis | None = None
 
     @asynccontextmanager
     async def redis_client(self) -> AsyncIterator[Redis]:
-        redis_client = Redis(connection_pool=self.pool)
-        yield redis_client
-        await redis_client.close()
+        if not self._client:
+            self._client = Redis(connection_pool=self.pool)
+        yield self._client
 
 
 r_cache = RedisHelper(
