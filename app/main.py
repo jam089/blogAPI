@@ -6,6 +6,7 @@ from api import router as api_router
 from core import settings
 from fastapi import FastAPI
 from services.elasticsearch import check_index as es_check_idx, es
+from services.redis.redis_helper import r_cache
 
 
 @asynccontextmanager
@@ -14,6 +15,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await es_check_idx(index_name=settings.es.articles_index)
     yield
     es.es_close_connection()
+    await r_cache.close_pool()
 
 
 app = FastAPI(lifespan=lifespan)
