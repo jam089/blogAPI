@@ -1,6 +1,3 @@
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator, AsyncIterator
-
 from core import settings
 from redis.asyncio import ConnectionPool, Redis
 
@@ -22,7 +19,6 @@ class RedisHelper:
         )
         self._client: Redis | None = None
 
-    @asynccontextmanager
     def redis_client(self) -> Redis:
         if not self._client:
             self._client = Redis(connection_pool=self.pool)
