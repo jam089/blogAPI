@@ -23,10 +23,13 @@ class RedisHelper:
         self._client: Redis | None = None
 
     @asynccontextmanager
-    async def redis_client(self) -> AsyncIterator[Redis]:
+    def redis_client(self) -> Redis:
         if not self._client:
             self._client = Redis(connection_pool=self.pool)
-        yield self._client
+        return self._client
+
+    async def close_pool(self) -> None:
+        await self.pool.disconnect()
 
 
 r_cache = RedisHelper(
