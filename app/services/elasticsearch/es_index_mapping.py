@@ -19,5 +19,6 @@ article = {
     },
 }
 
+fields_weight = ["title^3", "text", "topic^2", "author_name^1.5"]
 
 index_dict = {settings.es.articles_index: article}
