@@ -1,5 +1,5 @@
-from typing import Any, AsyncGenerator, List, Type, TypeVar, cast
 import logging
+from typing import Any, AsyncGenerator, List, Type, TypeVar, cast
 
 from core.models import Base
 from elastic_transport import ObjectApiResponse
@@ -8,10 +8,10 @@ from elasticsearch.exceptions import BadRequestError
 from elasticsearch.helpers import async_bulk
 from pydantic import BaseModel
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncScalarResult
+from sqlalchemy.ext.asyncio import AsyncScalarResult, AsyncSession
 
 from services.elasticsearch.es_helper import es
-from services.elasticsearch.es_index_mapping import index_dict, fields_weight
+from services.elasticsearch.es_index_mapping import fields_weight, index_dict
 
 T = TypeVar("T", bound=Base)
 

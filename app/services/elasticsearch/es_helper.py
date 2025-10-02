@@ -4,7 +4,6 @@ import logging
 from core import settings
 from elasticsearch import AsyncElasticsearch
 
-
 logger = logging.getLogger("uvicorn.elastic_search")
 
 
