@@ -27,11 +27,6 @@ class RedisHelper:
         yield redis_client
         await redis_client.close()
 
-    async def redis_getter(self) -> AsyncGenerator[Redis, None]:
-        async with self.redis_client() as redis_sess:
-            yield redis_sess
-            await redis_sess.close()
-
 
 r_cache = RedisHelper(
     url=str(settings.cache.url),
