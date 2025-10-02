@@ -1,9 +1,10 @@
-from typing import Any, AsyncGenerator, List, Sequence, Type, TypeVar, cast
+from typing import Any, AsyncGenerator, List, Type, TypeVar, cast
 import logging
 
 from core.models import Base
 from elastic_transport import ObjectApiResponse
 from elasticsearch import AsyncElasticsearch
+from elasticsearch.exceptions import BadRequestError
 from elasticsearch.helpers import async_bulk
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -47,6 +48,8 @@ async def check_index(
             index_name=index_name,
             index_map=index_map,
         )
+        if response.body.get("error"):
+            raise BadRequestError("Cannot create index,", response.meta, response.body)
         return response
     logger.info("Index was created")
     return None
