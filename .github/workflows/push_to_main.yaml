@@ -59,7 +59,7 @@ jobs:
 #          chmod +x ./tests/test_prestart.sh
 #          ./tests/test_prestart.sh
       - name: Run unit-tests
-        run: poetry run pytest tests/unit-v --junitxml=pytest-results.xml
+        run: poetry run pytest tests/unit -v --junitxml=pytest-results.xml
       - name: Mark repo as safe
         run: git config --system --add safe.directory $GITHUB_WORKSPACE
       - name: Upload test results
