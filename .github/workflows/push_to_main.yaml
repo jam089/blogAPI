@@ -38,3 +38,36 @@ jobs:
         with:
           report_paths: mypy-report.xml
           require_tests: true
+
+  unit:
+    runs-on: ubuntu-latest
+    container: python:3.12.10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install poetry and deps
+        run: |
+          pip install poetry
+          poetry install --with dev
+#      - name: Run prestart script
+#        run: |
+#          chmod +x ./tests/test_prestart.sh
+#          ./tests/test_prestart.sh
+      - name: Run unit-tests
+        run: poetry run pytest tests/unit-v --junitxml=pytest-results.xml
+      - name: Mark repo as safe
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: pytest-results.xml
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v2.1.1
+        if: always()
+        with:
+          name: Pytest Results
+          path: pytest-results.xml
+          reporter: java-junit
