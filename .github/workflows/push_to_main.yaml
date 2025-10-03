@@ -46,9 +46,11 @@ jobs:
     runs-on: ubuntu-latest
     container: python:3.12.10
     env:
-      DB_URL: 'sqlite:///:memory:'
-      CACHE_URL: 'dummy'
-      ES_URL: 'dummy'
+      BLOGAPI__DB__URL: 'postgresql+asyncpg://pwd:pwd@host:0000/url'
+      BLOGAPI__DB__ECHO: 0
+      BLOGAPI__DB__ECHO_POOL: 0
+      BLOGAPI__CACHE__URL: 'redis://:pwd@host:0000'
+      BLOGAPI__ES__URL: 'http://host:0000'
     steps:
       - uses: actions/checkout@v4
         with:
