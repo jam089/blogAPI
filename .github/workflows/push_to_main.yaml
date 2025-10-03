@@ -45,7 +45,10 @@ jobs:
   unit:
     runs-on: ubuntu-latest
     container: python:3.12.10
-
+    env:
+      DB_URL: 'sqlite:///:memory:'
+      CACHE_URL: 'dummy'
+      ES_URL: 'dummy'
     steps:
       - uses: actions/checkout@v4
         with:
