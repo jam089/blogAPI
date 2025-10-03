@@ -83,7 +83,7 @@ async def test_update_article_without_add_docs_to_index(mocker: MockFixture) -> 
         db_sess=mocker.Mock(),
         es_sess=mocker.Mock(),
         article_id=1,
-        article_in=ChangeArticleSchm(title=""),
+        article_in=ChangeArticleSchm(title="ghfsd"),
     )
 
     assert mock_add_doc.call_count == 2
@@ -105,7 +105,7 @@ async def test_update_article_add_docs_to_index(mocker: MockFixture) -> None:
         db_sess=mocker.Mock(),
         es_sess=mocker.Mock(),
         article_id=1,
-        article_in=ChangeArticleSchm(title=""),
+        article_in=ChangeArticleSchm(title="ghfd"),
     )
 
     mock_update_doc.assert_called_once()
@@ -119,7 +119,7 @@ async def test_update_article_not_found(mocker: MockFixture) -> None:
             db_sess=mocker.Mock(),
             es_sess=mocker.Mock(),
             article_id=1,
-            article_in=ChangeArticleSchm(title=""),
+            article_in=ChangeArticleSchm(title="dfgh"),
         )
     assert exc.value == HTTP_404
 
