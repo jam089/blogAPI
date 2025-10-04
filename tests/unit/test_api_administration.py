@@ -6,6 +6,7 @@ from pytest_mock import MockFixture
 
 @pytest.mark.asyncio
 async def test_import_data_from_file(mocker: MockFixture) -> None:
+    mocker.patch("api.routes.administration.json_read")
     mocker.patch("api.routes.administration.crud.bulk_load_article", return_value=True)
     mocker.patch("api.routes.administration.crud.bulk_load_comments", return_value=True)
     fake_inactive_imported_articles = mocker.patch(
@@ -17,6 +18,7 @@ async def test_import_data_from_file(mocker: MockFixture) -> None:
 
 @pytest.mark.asyncio
 async def test_import_data_from_file_with_exc(mocker: MockFixture) -> None:
+    mocker.patch("api.routes.administration.json_read")
     mocker.patch("api.routes.administration.crud.bulk_load_article", return_value=True)
     mocker.patch(
         "api.routes.administration.crud.bulk_load_comments", return_value=False
