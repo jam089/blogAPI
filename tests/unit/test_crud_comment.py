@@ -29,7 +29,6 @@ async def test_bulk_load_comments(mocker: MockFixture) -> None:
 
     assert result is True
     added_comment = sess.add.call_args[0][0]
-    print(added_comment)
     assert len(added_comment.comment_text) == max_len
     sess.commit.assert_awaited()
 
