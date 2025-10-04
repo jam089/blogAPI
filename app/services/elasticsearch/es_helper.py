@@ -27,7 +27,7 @@ class ESHelper:
         while not ping:
             ping = await self._connection.ping()
             logger.info("Still try to connect ot ES...")
-            await asyncio.sleep(7)
+            await asyncio.sleep(settings.es.connection_ping)
         logger.info("ES connection established")
         return self._connection
 
