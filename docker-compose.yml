@@ -1,15 +1,50 @@
 services:
 
+  app:
+    build:
+      context: ./
+      dockerfile: ./docker-build/Dockerfile
+    env_file:
+      - ./.env
+    ports:
+      - 8000:8000
+    networks:
+      - backend
+    volumes:
+      - ./data:/app/import_data:ro
+    depends_on:
+      pg:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
+      redis:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./app
+          target: /app
+        - action: rebuild
+          path: ./poetry.lock
+
   pg:
     image: postgres
     environment:
-      POSTGRES_DB: blog_app
-      POSTGRES_USER: pgadmin
-      POSTGRES_PASSWORD: pgadmin
+      POSTGRES_DB: ${BLOGAPI__DB__SCHEMA}
+      POSTGRES_USER: ${BLOGAPI__DB__LOGIN}
+      POSTGRES_PASSWORD: ${BLOGAPI__DB__PASS}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BLOGAPI__DB__LOGIN} -d ${BLOGAPI__DB__SCHEMA}"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      backend:
+      pg_net:
 
   redis:
     image: redis/redis-stack-server
@@ -17,11 +52,10 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/var/lib/redis/data
-    command: ["redis-server",
-              "--requirepass", "radmin",
-              "--appendonly", "yes"]
+    command: >
+      sh -c 'redis-server --requirepass "${BLOGAPI__CACHE__PASS}" --appendonly yes'
     networks:
-      - dev_back
+      - backend
 
   elasticsearch:
     image: elasticsearch:8.15.2
@@ -40,8 +74,6 @@ services:
       - "9200:9200"
     volumes:
       - esdata:/var/lib/elasticsearch/data
-    networks:
-      - esnet
     ulimits:
       memlock:
         soft: -1
@@ -50,11 +82,15 @@ services:
       resources:
         limits:
           memory: 2g
+    networks:
+      backend:
 
   adminer:
     image: adminer:latest
     ports:
       - "8080:8080"
+    networks:
+      pg_net:
 
   dejavu:
     image: appbaseio/dejavu:latest
@@ -68,7 +104,7 @@ services:
     ports:
       - "8081:8081"
     networks:
-      - "dev_back"
+      - redis_net
 
 volumes:
   pgdata:
@@ -79,5 +115,6 @@ volumes:
     driver: local
 
 networks:
-  esnet:
-  dev_back:
+  backend:
+  redis_net:
+  pg_net:
