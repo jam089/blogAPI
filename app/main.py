@@ -23,7 +23,8 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_router)
 
-if __name__ == "__main__":
+
+def main() -> None:
     uvicorn.run(
         "main:app",
         host=settings.run.host,
@@ -32,3 +33,7 @@ if __name__ == "__main__":
         # workers=4,
         # loop="none",  # for Redis testing
     )
+
+
+if __name__ == "__main__":
+    main()
