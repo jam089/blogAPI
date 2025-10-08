@@ -43,9 +43,9 @@ pythonpath = [
     ".",
     "app",
 ]
-env_files = [
-    ".env.test",
-]
+#env_files = [
+#    ".env.test",
+#]
 
 [tool.mypy]
 python_version = 3.12
