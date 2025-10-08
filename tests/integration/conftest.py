@@ -1,8 +1,10 @@
 from tests.integration.database import (
     async_client,  # noqa: F401
-    override_dispose,  # noqa: F401
-    override_session_getter,  # noqa: F401
+    create_test_engine,  # noqa: F401
+    create_test_session_factory,  # noqa: F401
+    override_dependency,  # noqa: F401
     prepare_db,  # noqa: F401
+    test_db_url,  # noqa: F401
     test_session,  # noqa: F401
 )
 from tests.integration.docker_conteiners import (
