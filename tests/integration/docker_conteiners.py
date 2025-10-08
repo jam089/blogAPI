@@ -4,6 +4,7 @@ from typing import Any
 
 import pytest
 import requests
+from core import settings
 from pytest import Config
 from pytest_docker.plugin import Services
 from requests.exceptions import ConnectionError
@@ -36,8 +37,12 @@ def _check_tcp_connection(host: str, port: int) -> bool:
 @pytest.fixture(scope="package")
 def app_service(docker_ip: str, docker_services: Services) -> str:
     port = docker_services.port_for("app", 8000)
-    url = f"http://{docker_ip}:{port}/api"
-    url_ping = "{}/admin/ping".format(url)
+    url = f"http://{docker_ip}:{port}"
+    url_ping = "{}{}{}/ping".format(
+        url,
+        settings.api.prefix,
+        settings.api.admin.prefix,
+    )
     docker_services.wait_until_responsive(
         timeout=60.0, pause=1.0, check=lambda: is_responsive(url_ping)
     )
