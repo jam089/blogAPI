@@ -15,6 +15,11 @@ from api.schemes import CreateArticleSchm
 router = APIRouter()
 
 
+@router.get("/ping/", status_code=status.HTTP_200_OK)
+async def ping() -> dict[str, str]:
+    return {"status": "pong"}
+
+
 @router.get("/import-data/", status_code=status.HTTP_201_CREATED)
 async def import_data_from_file(
     sess: Annotated[AsyncSession, Depends(db_helper.session_getter)],
