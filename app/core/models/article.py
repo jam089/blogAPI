@@ -19,6 +19,7 @@ class Article(Base):
         back_populates="article",
         lazy="immediate",
         order_by="Comment.created_at.desc()",
+        cascade="all, delete-orphan",
     )
 
     @hybrid_property
