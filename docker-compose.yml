@@ -18,7 +18,7 @@ services:
       elasticsearch:
         condition: service_started
       redis:
-        condition: service_started
+        condition: service_healthy
     develop:
       watch:
         - action: sync+restart
@@ -54,8 +54,14 @@ services:
       - redis_data:/var/lib/redis/data
     command: >
       sh -c 'redis-server --requirepass "${BLOGAPI__CACHE__PASS}" --appendonly yes'
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 2s
+      timeout: 2s
+      retries: 10
     networks:
       - backend
+      - redis_net
 
   elasticsearch:
     image: elasticsearch:8.15.2
@@ -91,11 +97,15 @@ services:
       - "8080:8080"
     networks:
       pg_net:
+    profiles:
+      - 'dev'
 
   dejavu:
     image: appbaseio/dejavu:latest
     ports:
       - "1358:1358"
+    profiles:
+      - 'dev'
 
   redis-commander:
     image: rediscommander/redis-commander:latest
@@ -105,6 +115,8 @@ services:
       - "8081:8081"
     networks:
       - redis_net
+    profiles:
+      - 'dev'
 
 volumes:
   pgdata:
