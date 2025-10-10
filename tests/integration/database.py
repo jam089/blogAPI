@@ -6,7 +6,7 @@ import pytest
 import pytest_asyncio
 from core import db_helper, settings
 from core.models import Base
-from httpx import ASGITransport, AsyncClient
+from httpx import AsyncClient
 from main import app
 from sqlalchemy import NullPool, text
 from sqlalchemy.ext.asyncio import (
@@ -130,8 +130,21 @@ async def test_session(
 @pytest_asyncio.fixture(scope="function")
 async def async_client(app_service: str) -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(
-        transport=ASGITransport(app),
-        base_url=f"http://test{settings.api.prefix}",
+        # transport=ASGITransport(app),
+        base_url=f"{app_service}{settings.api.prefix}",
+        follow_redirects=False,
+        headers={"Cache-Control": "no-cache"},
+    ) as ac:
+        yield ac
+
+
+@pytest_asyncio.fixture(scope="function")
+async def async_client_app_redis_inactive(
+    app_service_redis_inactive: str,
+) -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(
+        # transport=ASGITransport(app),
+        base_url=f"{app_service_redis_inactive}{settings.api.prefix}",
         follow_redirects=False,
         headers={"Cache-Control": "no-cache"},
     ) as ac:
