@@ -1,0 +1,42 @@
+name: Integration tests
+on:
+  workflow_dispatch:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    container: python:3.12.10
+    env:
+      BLOGAPI__DB__URL: ${{ secrets.BLOGAPI__DB__URL }}
+      BLOGAPI__DB__LOGIN: ${{ secrets.BLOGAPI__DB__LOGIN }}
+      BLOGAPI__DB__PASS: ${{ secrets.BLOGAPI__DB__PASS }}
+      BLOGAPI__DB__SCHEMA: ${{ secrets.BLOGAPI__DB__SCHEMA }}
+      BLOGAPI__DB__ECHO: 0
+      BLOGAPI__DB__ECHO_POOL: 0
+      BLOGAPI__CACHE__URL: ${{ secrets.BLOGAPI__CACHE__URL }}
+      BLOGAPI__CACHE__PASS: ${{ secrets.BLOGAPI__CACHE__PASS }}
+      BLOGAPI__ES__URL: ${{ secrets.BLOGAPI__ES__URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install poetry and deps
+        run: |
+          pip install "poetry==2.1.2"
+          poetry install --with dev
+      - name: Run integration tests
+        run: poetry run -m integration -v --junitxml=pytest-results.xml
+      - name: Mark repo as safe
+        run: git config --system --add safe.directory $GITHUB_WORKSPACE
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: pytest-results.xml
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v2.1.1
+        if: always()
+        with:
+          name: Pytest Results
+          path: pytest-results.xml
+          reporter: java-junit
