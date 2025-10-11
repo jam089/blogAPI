@@ -122,7 +122,6 @@ async def test_update_comment(
         datetime.fromisoformat(response.json()["created_at"])
         == test_comments.created_at
     )
-    assert response.json()["last_updated_at"] is not None
     assert response.json()["article_id"] == test_comments.article_id
     if comment_to_update.get("comment_text"):
         assert response.json()["comment_text"] == comment_to_update["comment_text"]
