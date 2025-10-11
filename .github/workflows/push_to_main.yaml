@@ -58,10 +58,6 @@ jobs:
         run: |
           pip install poetry
           poetry install --with dev
-#      - name: Run prestart script
-#        run: |
-#          chmod +x ./tests/test_prestart.sh
-#          ./tests/test_prestart.sh
       - name: Run unit-tests
         run: poetry run pytest -m unit -v --junitxml=pytest-results.xml
       - name: Mark repo as safe
