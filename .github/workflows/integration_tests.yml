@@ -20,6 +20,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Install Docker CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-ce-cli docker-compose-plugin
       - name: Install poetry and deps
         run: |
           pip install "poetry==2.1.2"
