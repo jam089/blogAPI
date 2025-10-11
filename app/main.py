@@ -5,6 +5,7 @@ import uvicorn
 from api import router as api_router
 from core import settings
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from services.elasticsearch import check_index as es_check_idx
 from services.elasticsearch import es
 from services.redis.redis_helper import r_cache
@@ -20,6 +21,21 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",  # если будешь локально тестить
+        "http://127.0.0.1:8000",
+        "https://grill-detect-worked-carey.trycloudflare.com",
+        "https://preview-fastapi-blog-frontend-kzmfwmrfetrq6yn1a7gp.vusercontent.net",
+        "*",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(api_router)
 
