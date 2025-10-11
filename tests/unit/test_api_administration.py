@@ -3,6 +3,8 @@ from api.routes.administration import import_data_from_file
 from fastapi import HTTPException
 from pytest_mock import MockFixture
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.mark.asyncio
 async def test_import_data_from_file(mocker: MockFixture) -> None:

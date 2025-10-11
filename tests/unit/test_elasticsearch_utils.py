@@ -11,6 +11,8 @@ from services.elasticsearch.elasticsearch_utils import (
     searching_docs,
 )
 
+pytestmark = pytest.mark.unit
+
 
 class UserSchema(BaseModel):
     id: str

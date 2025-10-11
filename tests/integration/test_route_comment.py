@@ -5,6 +5,8 @@ from core import settings
 from core.models import Article, Comment
 from httpx import AsyncClient
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.mark.asyncio
 async def test_get_comments_of_article(

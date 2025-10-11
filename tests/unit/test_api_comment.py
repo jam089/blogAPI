@@ -12,6 +12,8 @@ from api.schemes.comment import ChangeCommentSchm, CreateCommentSchm
 from fastapi import HTTPException
 from pytest_mock import MockFixture
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.mark.asyncio
 async def test_get_comments_of_article(mocker: MockFixture) -> None:

@@ -3,6 +3,8 @@ from api.crud.comment import bulk_load_comments
 from core.models import Article
 from pytest_mock import MockFixture
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.mark.asyncio
 async def test_bulk_load_comments(mocker: MockFixture) -> None:

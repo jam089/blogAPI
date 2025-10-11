@@ -44,6 +44,10 @@ pythonpath = [
     ".",
     "app",
 ]
+markers = [
+    "integration: mark tests as integration tests",
+    "unit: mark tests as unit-tests",
+]
 
 [tool.mypy]
 python_version = 3.12

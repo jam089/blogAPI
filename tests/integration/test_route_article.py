@@ -9,6 +9,8 @@ from elasticsearch import AsyncElasticsearch
 from httpx import AsyncClient
 from redis.asyncio import Redis
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.mark.asyncio
 async def test_get_trends_articles_redis_active(

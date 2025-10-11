@@ -13,6 +13,8 @@ from core.models import Article
 from fastapi import HTTPException
 from pytest_mock import MockFixture
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.mark.asyncio
 async def test_search_articles_aggregates_articles_from_ids(

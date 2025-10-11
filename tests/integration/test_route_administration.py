@@ -6,6 +6,8 @@ from core.models import Article
 from elasticsearch import AsyncElasticsearch
 from httpx import AsyncClient
 
+pytestmark = pytest.mark.integration
+
 
 @pytest.mark.asyncio
 async def test_ping(async_client: AsyncClient) -> None:

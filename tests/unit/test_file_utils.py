@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
 
+import pytest
 from core.utils.file_utils import json_read
+
+pytestmark = pytest.mark.unit
 
 
 def test_json_read_returns_list_of_dicts(tmp_path: Path) -> None:

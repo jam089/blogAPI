@@ -1,6 +1,8 @@
 import pytest
 from core.models import Article, Comment
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.mark.asyncio
 async def test_article_score_property_non_comment() -> None:

@@ -1,4 +1,7 @@
+import pytest
 from services.redis.redis_helper import RedisHelper
+
+pytestmark = pytest.mark.unit
 
 
 def test_single_client() -> None:

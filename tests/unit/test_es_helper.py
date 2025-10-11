@@ -4,6 +4,8 @@ from elastic_transport import ConnectionError
 from pytest_mock import MockFixture
 from services.elasticsearch.es_helper import ESHelper
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.mark.asyncio
 async def test_es_connect_success(mocker: MockFixture) -> None:

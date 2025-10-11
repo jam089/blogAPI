@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from pytest_mock import MockerFixture
 from services.redis import redis_cache
 
+pytestmark = pytest.mark.unit
+
 
 class DummyModel(BaseModel):
     id: int
