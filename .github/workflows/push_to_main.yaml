@@ -55,7 +55,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Dump environment variables to .env
-        run: printenv | grep '^BLOGAPI__' > .env
+        run: printenv | grep '^BLOGAPI__' > /home/runner/work/blogAPI/blogAPI/.env
       - name: Install poetry and deps
         run: |
           pip install poetry
