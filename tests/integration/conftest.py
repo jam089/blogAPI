@@ -150,6 +150,18 @@ async def test_articles_with_comments(
         return test_article_with_comments_b
 
 
+@pytest_asyncio.fixture(scope="function")
+async def test_articles_to_bulk_in_es(
+    create_from_factory: Callable[..., Awaitable[Article]],  # noqa: F811
+) -> list[Article]:
+    create_article = create_from_factory
+    article_a = await create_article(ArticleFactory, import_article_id=200)
+    article_b = await create_article(ArticleFactory, import_article_id=220)
+    article_c = await create_article(ArticleFactory, import_article_id=222)
+    article_d = await create_article(ArticleFactory, import_article_id=400)
+    return [article_a, article_b, article_c, article_d]
+
+
 def pytest_collection_modifyitems(items: list) -> None:
     order = ["test_route_article", "test_route_comment", "test_route_administration"]
     items.sort(
