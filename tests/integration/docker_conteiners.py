@@ -14,7 +14,7 @@ from pytest import Config
 from pytest_docker.plugin import Services
 from requests.exceptions import ConnectionError
 
-CONTAINER_TIMEOUT = 90.0
+CONTAINER_TIMEOUT = 150.0
 PROJECT_NAME = "blogapi-integration-tests"
 
 
