@@ -4,8 +4,16 @@ services:
     build:
       context: ./
       dockerfile: ./docker-build/Dockerfile
-    env_file:
-      - ./.env
+    environment:
+      BLOGAPI__DB__URL: ${BLOGAPI__DB__URL}
+      BLOGAPI__DB__LOGIN: ${BLOGAPI__DB__LOGIN}
+      BLOGAPI__DB__PASS: ${BLOGAPI__DB__PASS}
+      BLOGAPI__DB__SCHEMA: ${BLOGAPI__DB__SCHEMA}
+      BLOGAPI__DB__ECHO: ${BLOGAPI__DB__ECHO}
+      BLOGAPI__DB__ECHO_POOL: ${BLOGAPI__DB__ECHO_POOL}
+      BLOGAPI__CACHE__URL: ${BLOGAPI__CACHE__URL}
+      BLOGAPI__CACHE__PASS: ${BLOGAPI__CACHE__PASS}
+      BLOGAPI__ES__URL: ${BLOGAPI__ES__URL}
     ports:
       - 8000:8000
     networks:
