@@ -5,7 +5,6 @@ on:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    container: python:3.12.10
     env:
       BLOGAPI__DB__URL: ${{ secrets.BLOGAPI__DB__URL }}
       BLOGAPI__DB__LOGIN: ${{ secrets.BLOGAPI__DB__LOGIN }}
@@ -20,6 +19,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12.10'
       - name: Install Docker CLI
         run: |
           apt-get update
