@@ -148,3 +148,12 @@ async def test_articles_with_comments(
         return test_article_with_comments_a
     else:
         return test_article_with_comments_b
+
+
+def pytest_collection_modifyitems(items: list) -> None:
+    order = ["test_route_article", "test_route_comment", "test_route_administration"]
+    items.sort(
+        key=lambda item: next(
+            (i for i, key in enumerate(order) if key in item.nodeid), 999
+        )
+    )
