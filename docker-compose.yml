@@ -1,9 +1,8 @@
 services:
 
   app:
-    build:
-      context: ./
-      dockerfile: ./docker-build/Dockerfile
+    image: jam089/blogapp-backend:latest
+    pull_policy: always
     container_name: fastapi_app
     environment:
       BLOGAPI__DB__URL: ${BLOGAPI__DB__URL}
@@ -38,9 +37,8 @@ services:
           path: ./poetry.lock
 
   frontend:
-    build:
-      context: ./
-      dockerfile: ./frontend/Dockerfile
+    image: jam089/blogapp-frontend:latest
+    pull_policy: always
     container_name: next_frontend
     ports:
       - "3000:3000"
