@@ -26,10 +26,9 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # если будешь локально тестить
+        "http://localhost:3000",
         "http://127.0.0.1:8000",
-        "https://grill-detect-worked-carey.trycloudflare.com",
-        "https://preview-fastapi-blog-frontend-kzmfwmrfetrq6yn1a7gp.vusercontent.net",
+        "https://blogapp.spacejamhd.com",
         "*",
     ],
     allow_credentials=True,
